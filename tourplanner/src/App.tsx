@@ -6,7 +6,7 @@ export default function App() {
     const [message, setMessage] = useState("");
 
     useEffect(() => {
-        apiGet("/hello")
+        apiGet("/api/hello")
             .then((data) => setMessage(data.message))
     }, []);
 
