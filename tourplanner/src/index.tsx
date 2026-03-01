@@ -3,13 +3,25 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import "@radix-ui/themes/styles.css";
+import { BrowserRouter } from "react-router-dom";
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+// Apply initial theme class from localStorage
+const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
+if (savedTheme) {
+  document.documentElement.classList.toggle('light', savedTheme === 'light');
+}
+
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );
 
