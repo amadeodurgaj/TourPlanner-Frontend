@@ -8,6 +8,7 @@ import ProfilePage from './pages/ProfilePage';
 import LoginPage from './components/LoginForm';
 import LoginForm from './components/LoginForm';
 import RegisterPage from './pages/RegisterPage';
+import LogoutPage from './pages/LogoutPage';
 
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
                 <Route path="/login" element={<LoginForm />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/*" element={<LoginPage />} />
+                <Route path="/logout" element={<LogoutPage />} />
             </Routes>
         </div>
     );

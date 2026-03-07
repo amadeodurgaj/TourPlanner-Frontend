@@ -1,26 +1,27 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserService from '@/services/UserService';
+import AuthService from '@/services/AuthService';
+import { useAuth } from '@/context/AuthContext';
 
 export default function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      const response = await UserService.login({
+      const response = await AuthService.login({
         username,
         password
       });
-      
-      // Store token in localStorage
-      localStorage.setItem('token', response.data!.token);
-      
+
+      login();
       // Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {

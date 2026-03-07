@@ -2,24 +2,32 @@ import { useState, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { MenuIcon, XIcon, SunIcon, MoonIcon } from 'lucide-react'
 import { cn } from '../lib/utils'
+import { useAuth } from '@/context/AuthContext'
 
 interface NavLinkType {
   name: string
   path: string
 }
 
-const navLinks: NavLinkType[] = [
-  
-  { name: 'Tours', path: '/tours' },
-  { name: 'Dashboard', path: '/dashboard' },
-  { name:'Profile',path: '/profile'},
+const publicNavLinks: NavLinkType[] = [
   { name: 'Login', path: '/login' },
   { name: 'Register', path: '/register' }
 ]
 
+const protectedNavLinks: NavLinkType[] = [
+  { name: 'Tours', path: '/tours' },
+  { name: 'Dashboard', path: '/dashboard' },
+  { name: 'Profile', path: '/profile' },
+  { name: 'Logout', path: '/logout' }
+]
+
 export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) => {
+  const { isAuthenticated } = useAuth()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+
+  const navLinks = isAuthenticated ? protectedNavLinks : publicNavLinks
+
 
   // Track whether we're in mobile breakpoint
   useEffect(() => {
@@ -36,7 +44,7 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--secondary)]/50 bg-primary/80 backdrop-md">
+    <header className="sticky top-0 z-50 w-full border-b border-[var(--secondary)]/50 bg-primary/80 backdrop-blur-md">
       <nav className="mx-auto flex h-[var(--navbar-height)] max-w-6xl items-center justify-between px-6">
 
         {/* Logo */}

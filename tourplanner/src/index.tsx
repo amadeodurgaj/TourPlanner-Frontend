@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "@radix-ui/themes/styles.css";
 import { BrowserRouter } from "react-router-dom";
-import LoginPage from './components/LoginForm'; 
+import { AuthProvider } from './context/AuthContext';
 
 
 const root = ReactDOM.createRoot(
@@ -21,7 +21,9 @@ if (savedTheme) {
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );

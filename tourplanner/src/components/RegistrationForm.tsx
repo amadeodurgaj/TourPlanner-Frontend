@@ -1,6 +1,8 @@
+import AuthService from "@/services/AuthService";
 import UserService from "@/services/UserService";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 
 export default function RegistrationForm(){
@@ -11,6 +13,7 @@ export default function RegistrationForm(){
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,15 +26,16 @@ export default function RegistrationForm(){
         password,
         passwordConfirmation
       });
-      
-      const LoginResponse = await UserService.login({
+
+      const LoginResponse = await AuthService.login({
         username,
         password
       });
-      
+
+      login();
       // Store token in localStorage
-     localStorage.setItem('token', LoginResponse.data!.token);
-      
+     //localStorage.setItem('token', LoginResponse.data!.token);
+
       // Redirect to dashboard
       navigate('/Profile');
     } catch (err) {
