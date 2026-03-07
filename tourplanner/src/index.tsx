@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "@radix-ui/themes/styles.css";
 import { BrowserRouter } from "react-router-dom";
+import LoginPage from './components/LoginForm'; 
 
 
 const root = ReactDOM.createRoot(

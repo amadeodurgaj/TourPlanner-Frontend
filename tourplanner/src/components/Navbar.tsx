@@ -12,7 +12,9 @@ const navLinks: NavLinkType[] = [
   
   { name: 'Tours', path: '/tours' },
   { name: 'Dashboard', path: '/dashboard' },
-  { name:'Profile',path: 'Profile'},
+  { name:'Profile',path: '/profile'},
+  { name: 'Login', path: '/login' },
+  { name: 'Register', path: '/register' }
 ]
 
 export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) => {
@@ -40,9 +42,9 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
         {/* Logo */}
         <NavLink
           to="/"
-          className="text-2xl font-bold tracking-tight text-[var(--secondary)] hover:opacity-80 transition-opacity"
+          className="text-2xl font-bold tracking-tight text-[var(--secondary)] hover:opacity-80 transition-opacity font-mono"
         >
-          TourPlanner
+          Tour Planner
         </NavLink>
 
         {/* Desktop Navigation Links */}
