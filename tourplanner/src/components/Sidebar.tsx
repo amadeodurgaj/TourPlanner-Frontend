@@ -4,9 +4,10 @@ import { cn } from "../lib/utils";
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onCreateTour: () => void;
 }
 
-export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
+export const Sidebar = ({ isOpen, onClose, onCreateTour }: SidebarProps) => {
   return (
     <>
       {/*Desktop*/}
@@ -22,9 +23,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </h2>
           <button
             className="cursor-pointer rounded-lg group relative w-full font-sans text-sm font-medium tracking-wide text-primary bg-secondary overflow-hidden transition-all duration-300 hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary"
-            onClick={onClose}
+            onClick={onCreateTour}
           >
-            <span className="relative z-10 flex items-center justify-center gap-2 py-2.5">
+            <span  className="relative z-10 flex items-center justify-center gap-2 py-2.5">
               <PlusIcon size={14} />
               Create Tour
             </span>{" "}
@@ -52,7 +53,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           </h2>
           <button
             className="cursor-pointer group relative w-full font-serif text-base font-medium tracking-wide text-primary bg-secondary overflow-hidden transition-all duration-300 hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary"
-            onClick={onClose}
+            onClick={onCreateTour}
           >
             <span className="relative z-10 block py-2.5 text-center">
               + Create Tour

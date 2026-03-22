@@ -30,3 +30,24 @@ export interface UserRegisterRequest {
 
 export type UserLoginResponse = ApiResponse<LoginData>;
 export type UserRegisterResponse = ApiResponse<RegisterData>;
+
+export interface Tour {
+    id: string;
+    name: string;
+    description: string;
+    transportType: string;
+    fromLocation: string;
+    toLocation: string;
+    distance: number;
+    estimatedTime: string | null;
+    routeInfo: Record<string, any> | null;
+    childFriendliness: number;
+    popularityScore: number;
+    userId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type TourRequest = Omit<Tour, 'id' | 'childFriendliness' | 'popularityScore' | 'userId' | 'createdAt' | 'updatedAt'>;
+
+export interface TourResponse extends ApiResponse<Tour[]> {}
