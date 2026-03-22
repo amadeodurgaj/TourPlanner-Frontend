@@ -1,7 +1,13 @@
 export default function DashboardPage() {
     return (
-        <div>
-            <h1 className="sm:mx-auto sm:w-full sm:max-w-sm flex items-center justify-center font-mono text-3xl font-bold tracking-tight text-[var(--secondary)] content-center justify-center">Dashboard Page</h1>
+        <div className="min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 py-12">
+            <div className="text-center max-w-2xl">
+                <h1 className="font-serif text-6xl font-bold tracking-tighter text-secondary mb-6">
+                    Dashboard
+                </h1>
+                <div className="w-24 h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent mx-auto mb-6" />
+
+            </div>
         </div>
     );
 }

@@ -18,7 +18,8 @@ const protectedNavLinks: NavLinkType[] = [
   { name: 'Tours', path: '/tours' },
   { name: 'Dashboard', path: '/dashboard' },
   { name: 'Profile', path: '/profile' },
-  { name: 'Logout', path: '/logout' }
+  { name: 'Logout', path: '/logout' },
+  
 ]
 
 export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme: (theme: 'light' | 'dark') => void }) => {
@@ -29,12 +30,11 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
   const navLinks = isAuthenticated ? protectedNavLinks : publicNavLinks
 
 
-  // Track whether we're in mobile breakpoint
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 768px)')
     const handler = (e: MediaQueryListEvent) => {
       setIsMobile(e.matches)
-      if (!e.matches) setIsMenuOpen(false) // close menu when resizing to desktop
+      if (!e.matches) setIsMenuOpen(false)
     }
     setIsMobile(mq.matches)
     mq.addEventListener('change', handler)
@@ -44,29 +44,29 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--secondary)]/50 bg-primary/80 backdrop-blur-md">
-      <nav className="mx-auto flex h-[var(--navbar-height)] max-w-6xl items-center justify-between px-6">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-primary/80 backdrop-blur-md">
+      <nav className="mx-auto flex h-navbar max-w-6xl items-center justify-between px-6">
 
-        {/* Logo */}
         <NavLink
           to="/"
-          className="text-2xl font-bold tracking-tight text-[var(--secondary)] hover:opacity-80 transition-opacity font-mono"
+          className="group relative font-serif text-3xl font-bold tracking-tighter text-secondary transition-all duration-300 hover:text-accent"
         >
-          Tour Planner
+          <span className="relative z-10">Tour</span>
+          <span className="text-accent">Planner</span>
+          <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-accent transition-all duration-300 group-hover:w-full" />
         </NavLink>
 
-        {/* Desktop Navigation Links */}
-        <ul className="hidden md:flex items-center gap-6">
+        <ul className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <li key={link.name}>
               <NavLink
                 to={link.path}
                 className={({ isActive }) =>
                   cn(
-                    'text-lg font-medium transition-colors duration-200',
+                    'relative font-serif text-xl font-light tracking-wide transition-all duration-200',
                     isActive
-                      ? 'text-[var(--secondary)] border-b-2 border-[var(--secondary)] pb-0.7'
-                      : 'text-[var(--secondary)]/60 hover:text-[var(--secondary)]'
+                      ? 'text-secondary after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1px] after:bg-secondary'
+                      : 'text-muted hover:text-secondary'
                   )
                 }
               >
@@ -76,18 +76,16 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
           ))}
         </ul>
 
-        {/* Theme Toggle Button */}
         <button
-          className="hidden md:flex items-center justify-center w-9 h-9 rounded-md text-secondary hover:bg-white/10 transition-colors cursor-pointer"
+          className="hidden md:flex items-center justify-center w-9 h-9 rounded-full text-secondary hover:bg-accent/10 hover:text-accent transition-all duration-300 cursor-pointer"
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
           aria-label="Toggle theme"
         >
-          {theme === 'light' ? <MoonIcon size={20} /> : <SunIcon size={20} />}
+          {theme === 'light' ? <MoonIcon size={23} /> : <SunIcon size={23} />}
         </button>
 
-        {/* Mobile Menu Toggle Button */}
         <button
-          className="md:hidden flex items-center justify-center w-9 h-9 rounded-md text-secondary hover:bg-white/10 transition-colors"
+          className="md:hidden flex items-center justify-center w-9 h-9 rounded-full text-secondary hover:bg-accent/10 transition-colors"
           onClick={toggleMenu}
           aria-label="Toggle menu"
           aria-expanded={isMenuOpen}
@@ -96,15 +94,14 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
         </button>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
       {isMobile && (
         <div
           className={cn(
-            'md:hidden overflow-hidden transition-all duration-300 ease-in-out border-t border-white/10',
+            'md:hidden overflow-hidden transition-all duration-300 ease-out border-t border-border',
             isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
           )}
         >
-          <ul className="flex flex-col px-6 py-4 gap-4 bg-primary">
+          <ul className="flex flex-col px-6 py-6 gap-5 bg-primary">
             {navLinks.map((link) => (
               <li key={link.name}>
                 <NavLink
@@ -112,8 +109,8 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
                   onClick={() => setIsMenuOpen(false)}
                   className={({ isActive }) =>
                     cn(
-                      'block text-sm font-medium py-1 transition-colors duration-200',
-                      isActive ? 'text-white' : 'text-white/60 hover:text-white'
+                      'block font-serif text-base tracking-wide py-1 transition-colors duration-200',
+                      isActive ? 'text-secondary' : 'text-muted hover:text-secondary'
                     )
                   }
                 >
