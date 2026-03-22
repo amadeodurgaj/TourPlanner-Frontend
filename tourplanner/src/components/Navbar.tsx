@@ -44,7 +44,7 @@ export const Navbar = ({ theme, setTheme }: { theme: 'light' | 'dark'; setTheme:
   const toggleMenu = () => setIsMenuOpen((prev) => !prev)
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-primary/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-primary/70 backdrop-blur-xl">
       <nav className="mx-auto flex h-navbar max-w-6xl items-center justify-between px-6">
 
         <NavLink

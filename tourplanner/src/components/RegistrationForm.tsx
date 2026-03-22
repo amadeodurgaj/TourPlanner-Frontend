@@ -42,7 +42,7 @@ export default function RegistrationForm(){
     return (
     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="font-serif text-display font-bold tracking-tight text-secondary text-center">
+        <h2 className="font-serif text-xl font-bold tracking-tight text-secondary text-center">
           Create Account
         </h2>
         <p className="mt-3 font-serif text-lg font-light text-muted text-center tracking-wide">
@@ -55,7 +55,7 @@ export default function RegistrationForm(){
           <div>
             <label 
               htmlFor="username" 
-              className={`block font-serif text-sm font-medium tracking-wide transition-colors duration-200 ${
+              className={`block font-serif text-base font-medium tracking-wide transition-colors duration-200 ${
                 isFocused === 'username' ? 'text-accent' : 'text-secondary'
               }`}
             >
@@ -80,7 +80,7 @@ export default function RegistrationForm(){
           <div>
             <label 
               htmlFor="email" 
-              className={`block font-serif text-sm font-medium tracking-wide transition-colors duration-200 ${
+              className={`block font-serif text-base font-medium tracking-wide transition-colors duration-200 ${
                 isFocused === 'email' ? 'text-accent' : 'text-secondary'
               }`}
             >
@@ -105,7 +105,7 @@ export default function RegistrationForm(){
           <div>
             <label 
               htmlFor="password" 
-              className={`block font-serif text-sm font-medium tracking-wide transition-colors duration-200 ${
+              className={`block font-serif text-base font-medium tracking-wide transition-colors duration-200 ${
                 isFocused === 'password' ? 'text-accent' : 'text-secondary'
               }`}
             >
@@ -130,7 +130,7 @@ export default function RegistrationForm(){
           <div>
             <label 
               htmlFor="passwordConfirmation" 
-              className={`block font-serif text-sm font-medium tracking-wide transition-colors duration-200 ${
+              className={`block font-serif text-base font-medium tracking-wide transition-colors duration-200 ${
                 isFocused === 'passwordConfirmation' ? 'text-accent' : 'text-secondary'
               }`}
             >
@@ -153,7 +153,7 @@ export default function RegistrationForm(){
           </div>
 
           {error && (
-            <div className="text-danger font-serif text-sm text-center tracking-wide py-2">
+            <div className="text-danger font-serif text-base text-center tracking-wide py-2">
               {error}
             </div>
           )}
