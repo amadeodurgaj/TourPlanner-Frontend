@@ -28,6 +28,7 @@ export interface UserRegisterRequest {
 }
 
 
+
 export type UserLoginResponse = ApiResponse<LoginData>;
 export type UserRegisterResponse = ApiResponse<RegisterData>;
 
@@ -37,7 +38,11 @@ export interface Tour {
     description: string;
     transportType: string;
     fromLocation: string;
+    fromLatitude?: number;
+    fromLongitude?: number;
     toLocation: string;
+    toLatitude?: number;
+    toLongitude?: number;
     distance: number;
     estimatedTime: string | null;
     routeInfo: Record<string, any> | null;
@@ -46,8 +51,30 @@ export interface Tour {
     userId: string;
     createdAt: string;
     updatedAt: string;
+    imagePath?: string;
 }
 
 export type TourRequest = Omit<Tour, 'id' | 'childFriendliness' | 'popularityScore' | 'userId' | 'createdAt' | 'updatedAt'>;
 
 export interface TourResponse extends ApiResponse<Tour[]> {}
+
+export interface LocationSearchResult {
+    label: string;
+    latitude: number;
+    longitude: number;
+}
+
+export interface TourLog {
+  id: string;                          
+  dateTime: string;                    
+  comment: string;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  totalDistance: number;               
+  totalTime: number;                   
+  rating: number;                      
+  tourId: string;                      
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type TourLogRequest = Omit<TourLog, 'id' | 'tourId' | 'createdAt' | 'updatedAt'>;

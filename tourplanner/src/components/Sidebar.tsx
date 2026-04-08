@@ -1,87 +1,103 @@
-import { MenuIcon, XIcon, PlusIcon } from "lucide-react";
+import { Menu, X, Plus } from "lucide-react";
 import { cn } from "../lib/utils";
+import { TourList } from "./TourList";
+import type { Tour } from "@/types/api";
 
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateTour: () => void;
+  tours?: Tour[];
+  selectedTourId?: string;
+  onSelectTour?: (tour: Tour) => void;
+  onDeleteTour?: (id: string) => void;
 }
 
-export const Sidebar = ({ isOpen, onClose, onCreateTour }: SidebarProps) => {
+export function Sidebar({
+  isOpen,
+  onClose,
+  onCreateTour,
+  tours = [],
+  selectedTourId,
+  onSelectTour,
+  onDeleteTour,
+}: SidebarProps) {
   return (
     <>
-      {/*Desktop*/}
-      <aside
-        className={cn(
-          "fixed left-4 top-[calc(80px+1rem)] z-40 h-[calc(100vh-80px-2rem)] w-80 bg-primary border border-solid border-2 shadow-sm rounded-xl pt-5 px-6",
-          "hidden md:block",
-        )}
-      >
-        <div className="flex flex-col gap-3">
-          <h2 className="font-sans text-2xl font-bold text-accent text-center">
-            Tours
-          </h2>
-          <button
-            className="cursor-pointer rounded-lg group relative w-full font-sans text-sm font-medium tracking-wide text-primary bg-secondary overflow-hidden transition-all duration-300 hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary"
-            onClick={onCreateTour}
-          >
-            <span  className="relative z-10 flex items-center justify-center gap-2 py-2.5">
-              <PlusIcon size={14} />
-              Create Tour
-            </span>{" "}
-            <span className="absolute inset-0 bg-accent-hover transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
-          </button>
-        </div>
-      </aside>
-
       {isOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/50 md:hidden"
           onClick={onClose}
         />
       )}
-      {/*Mobile*/}
+
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-64 bg-primary border border-border/60 shadow-sm rounded-xl transition-transform duration-300 ease-in-out pt-20 px-6 md:hidden",
-          isOpen ? "translate-x-0" : "-translate-x-full",
+          "fixed left-0 top-0 z-40 h-screen w-72 bg-primary border-r border-border/50 transition-transform duration-300 ease-out md:translate-x-0 md:top-navbar md:left-0 md:h-[calc(100vh-navbar)] md:w-72",
+          isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="flex flex-col gap-6">
-          <h2 className="font-serif text-2xl font-bold tracking-tight text-secondary">
-            Tours
-          </h2>
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between p-4 border-b border-border/50 md:hidden">
+            <h2 className="text-xl font-bold text-secondary">Tours</h2>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg text-muted hover:text-secondary hover:bg-primary transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-medium text-muted-light uppercase tracking-wider">
+                Your Tours
+              </h2>
+              <span className="text-xs text-muted-light">{tours.length}</span>
+            </div>
+
+            {onSelectTour && onDeleteTour ? (
+              <TourList
+                tours={tours}
+                selectedId={selectedTourId}
+                onSelect={onSelectTour}
+                onDelete={onDeleteTour}
+              />
+            ) : (
+              <p className="text-sm text-muted-light text-center py-8">
+                No tours yet.
+              </p>
+            )}
+          </div>
+
+          <div className="p-4 border-t border-border/50">
           <button
-            className="cursor-pointer group relative w-full font-serif text-base font-medium tracking-wide text-primary bg-secondary overflow-hidden transition-all duration-300 hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary"
             onClick={onCreateTour}
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-primary font-medium hover:bg-accent-hover transition-colors cursor-pointer"
           >
-            <span className="relative z-10 block py-2.5 text-center">
-              + Create Tour
-            </span>
-            <span className="absolute inset-0 bg-accent-hover transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
-          </button>
+              <Plus className="w-4 h-4" />
+              Create Tour
+            </button>
+          </div>
         </div>
       </aside>
     </>
   );
-};
+}
 
 interface MobileMenuButtonProps {
   isOpen: boolean;
   onClick: () => void;
 }
 
-export const MobileMenuButton = ({
-  isOpen,
-  onClick,
-}: MobileMenuButtonProps) => {
+export function MobileMenuButton({ isOpen, onClick }: MobileMenuButtonProps) {
   return (
     <button
-      className="fixed top-[calc(80px+1rem)] left-4 z-50 flex items-center justify-center w-10 h-10 rounded-full bg-primary border border-border/60 shadow-sm rounded-xl text-secondary hover:bg-accent/10 hover:text-accent transition-all duration-300 md:hidden"
       onClick={onClick}
-      aria-label="Toggle sidebar"
+      className="fixed top-24 left-4 z-50 p-2.5 rounded-xl bg-primary border border-border/50 text-secondary hover:text-accent hover:border-accent/50 transition-colors md:hidden shadow-lg cursor-pointer"
+      aria-label="Toggle menu"
     >
-      {isOpen ? <XIcon size={18} /> : <MenuIcon size={18} />}
+      {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
     </button>
   );
-};
+}

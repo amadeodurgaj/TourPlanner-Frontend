@@ -16,12 +16,12 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const response = await AuthService.login({
+      await AuthService.login({
         username,
         password,
       });
 
-      login();
+      await login();
       navigate("/dashboard");
     } catch (err) {
       setError("Invalid username or password");
@@ -92,10 +92,10 @@ export default function LoginForm() {
           </div>
 
           <div className="flex items-center justify-end">
-            <a
-              href="/forgot-password"
-              className="font-serif text-base text-muted hover:text-accent transition-colors duration-200 tracking-wide"
-            >
+          <a
+            href="/forgot-password"
+            className="font-serif text-base text-muted hover:text-accent transition-colors duration-200 tracking-wide cursor-pointer"
+          >
               Forgot password?
             </a>
           </div>
@@ -121,7 +121,7 @@ export default function LoginForm() {
           No Account?{" "}
           <a
             href="/Register"
-            className="text-secondary underline decoration-accent underline-offset-4 hover:text-accent transition-colors duration-200"
+            className="text-secondary underline decoration-accent underline-offset-4 hover:text-accent transition-colors duration-200 cursor-pointer"
           >
             Register
           </a>

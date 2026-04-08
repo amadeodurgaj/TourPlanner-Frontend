@@ -28,13 +28,13 @@ export default function RegistrationForm(){
         passwordConfirmation
       });
 
-      const LoginResponse = await AuthService.login({
+      await AuthService.login({
         username,
         password
       });
 
-      login();
-      navigate('/Profile');
+      await login();
+      navigate('/dashboard');
     } catch (err) {
       setError('could not register');
     }
@@ -163,7 +163,7 @@ export default function RegistrationForm(){
               type="submit"
               className="group relative w-full font-serif text-lg font-medium tracking-wide text-primary bg-secondary overflow-hidden transition-all duration-300 hover:bg-accent hover:text-white focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-primary"
             >
-              <span className="relative z-10 block py-3">Create Account</span>
+              <span className="cursor-pointer relative z-10 block py-3">Create Account</span>
               <span className="absolute inset-0 bg-accent-hover transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
             </button>
           </div>
@@ -171,7 +171,7 @@ export default function RegistrationForm(){
 
         <p className="mt-10 font-serif text-base text-muted text-center tracking-wide">
           Already have an account?{' '}
-          <a href="/login" className="text-secondary underline decoration-accent underline-offset-4 hover:text-accent transition-colors duration-200">
+          <a href="/login" className="text-secondary underline decoration-accent underline-offset-4 hover:text-accent transition-colors duration-200 cursor-pointer">
             Sign in
           </a>
         </p>

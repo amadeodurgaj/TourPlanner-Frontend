@@ -1,32 +1,28 @@
 import { useEffect, useState } from "react";
 import { CircleX } from "lucide-react";
+import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
+import type { LocationSearchResult, TourRequest } from "@/types/api";
 
 type CreateTourDialogProps = {
   open: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    name: string;
-    description: string;
-    transportType: string;
-    from: string;
-    to: string;
-  }) => void;
+  onSubmit: (data: TourRequest) => void;
 };
 
 type FormState = {
   name: string;
   description: string;
   transportType: string;
-  from: string;
-  to: string;
+  fromLocation: LocationSearchResult | null;
+  toLocation: LocationSearchResult | null;
 };
 
 const initialForm: FormState = {
   name: "",
   description: "",
   transportType: "foot",
-  from: "",
-  to: "",
+  fromLocation: null,
+  toLocation: null,
 };
 
 export default function CreateTourDialog({
@@ -55,28 +51,33 @@ export default function CreateTourDialog({
 
   if (!open) return null;
 
-  const updateField = (field: keyof FormState, value: string) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-  };
-
   const isValid =
     form.name.trim() &&
     form.description.trim() &&
     form.transportType.trim() &&
-    form.from.trim() &&
-    form.to.trim();
+    form.fromLocation &&
+    form.toLocation;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isValid) return;
+    if (!isValid || !form.fromLocation || !form.toLocation) return;
 
-    onSubmit({
+    const tourData: TourRequest = {
       name: form.name.trim(),
       description: form.description.trim(),
       transportType: form.transportType,
-      from: form.from.trim(),
-      to: form.to.trim(),
-    });
+      fromLocation: form.fromLocation.label,
+      fromLatitude: form.fromLocation.latitude,
+      fromLongitude: form.fromLocation.longitude,
+      toLocation: form.toLocation.label,
+      toLatitude: form.toLocation.latitude,
+      toLongitude: form.toLocation.longitude,
+      distance: 0,
+      estimatedTime: null,
+      routeInfo: null,
+    };
+
+    onSubmit(tourData);
   };
 
   return (
@@ -117,7 +118,7 @@ export default function CreateTourDialog({
               id="tour-name"
               type="text"
               value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Morning Hike"
               className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
             />
@@ -134,7 +135,7 @@ export default function CreateTourDialog({
               id="tour-description"
               rows={4}
               value={form.description}
-              onChange={(e) => updateField("description", e.target.value)}
+              onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="A beautiful morning hike through the mountains"
               className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
             />
@@ -150,7 +151,7 @@ export default function CreateTourDialog({
             <select
               id="transport-type"
               value={form.transportType}
-              onChange={(e) => updateField("transportType", e.target.value)}
+              onChange={(e) => setForm((prev) => ({ ...prev, transportType: e.target.value }))}
               className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
             >
               <option value="foot">Foot / Hike</option>
@@ -161,39 +162,21 @@ export default function CreateTourDialog({
           </div>
 
           <div className="grid gap-5 md:grid-cols-2">
-            <div>
-              <label
-                htmlFor="from-location"
-                className="mb-2 block text-sm font-medium text-secondary"
-              >
-                From
-              </label>
-              <input
-                id="from-location"
-                type="text"
-                value={form.from}
-                onChange={(e) => updateField("from", e.target.value)}
-                placeholder="Start location"
-                className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
-              />
-            </div>
+            <PlaceAutocompleteInput
+              label="From"
+              placeholder="Start location"
+              value={form.fromLocation}
+              onSelect={(location) => setForm((prev) => ({ ...prev, fromLocation: location }))}
+              onClear={() => setForm((prev) => ({ ...prev, fromLocation: null }))}
+            />
 
-            <div>
-              <label
-                htmlFor="to-location"
-                className="mb-2 block text-sm font-medium text-secondary"
-              >
-                To
-              </label>
-              <input
-                id="to-location"
-                type="text"
-                value={form.to}
-                onChange={(e) => updateField("to", e.target.value)}
-                placeholder="Destination"
-                className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
-              />
-            </div>
+            <PlaceAutocompleteInput
+              label="To"
+              placeholder="Destination"
+              value={form.toLocation}
+              onSelect={(location) => setForm((prev) => ({ ...prev, toLocation: location }))}
+              onClear={() => setForm((prev) => ({ ...prev, toLocation: null }))}
+            />
           </div>
 
           <div className="flex items-center justify-end gap-3 pt-2">
@@ -208,7 +191,7 @@ export default function CreateTourDialog({
             <button
               type="submit"
               disabled={!isValid}
-              className="rounded-xl bg-secondary px-4 py-2 text-primary transition disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-xl bg-secondary px-4 py-2 text-primary transition disabled:cursor-not-allowed disabled:opacity-50"
             >
               Create Tour
             </button>

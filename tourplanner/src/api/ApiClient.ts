@@ -1,5 +1,7 @@
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 
+export { API_URL };
+
 export const api = {
     get: async (endpoint: string) => {
         const response = await fetch(`${API_URL}${endpoint}`,{credentials: 'include'});
