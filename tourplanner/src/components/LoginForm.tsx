@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
@@ -79,12 +79,12 @@ export default function LoginForm() {
             </div>
 
             <div className="flex items-center justify-end">
-              <a
-                href="/forgot-password"
+              <Link
+                to="/forgot-password"
                 className="text-sm text-muted-foreground/80 hover:text-accent transition-smooth"
               >
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {error && (
@@ -105,12 +105,12 @@ export default function LoginForm() {
         {/* Register link - Enhanced styling */}
         <p className="mt-7 text-sm text-muted-foreground/80 text-center">
           No Account?{" "}
-          <a
-            href="/register"
+          <Link
+            to="/register"
             className="font-medium text-accent hover:text-accent-hover transition-smooth"
           >
             Create one now
-          </a>
+          </Link>
         </p>
       </div>
     </div>

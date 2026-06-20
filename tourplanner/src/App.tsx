@@ -11,6 +11,8 @@ import LoginForm from './components/LoginForm';
 import RegisterPage from './pages/RegisterPage';
 import LogoutPage from './pages/LogoutPage';
 import Home from './pages/Home';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 
 export default function App() {
@@ -42,6 +44,12 @@ export default function App() {
                 } />
                 <Route path="/register" element={
                     <GuestRoute><RegisterPage /></GuestRoute>
+                } />
+                <Route path="/forgot-password" element={
+                    <GuestRoute><ForgotPasswordPage /></GuestRoute>
+                } />
+                <Route path="/reset-password/:token" element={
+                    <GuestRoute><ResetPasswordPage /></GuestRoute>
                 } />
                 <Route path="/tours" element={
                     <ProtectedRoute><ToursPage /></ProtectedRoute>

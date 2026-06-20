@@ -20,6 +20,21 @@ export interface UserLoginRequest {
     password: string;
 }
 
+export interface ForgotPasswordRequest {
+    email: string;
+}
+
+export interface ForgotPasswordData {
+    resetUrl: string | null;
+    expiresAt: string | null;
+}
+
+export interface ResetPasswordRequest {
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+}
+
 export interface UserRegisterRequest {
     username: string;
     email: string;
@@ -30,6 +45,8 @@ export interface UserRegisterRequest {
 
 
 export type UserLoginResponse = ApiResponse<LoginData>;
+export type ForgotPasswordResponse = ApiResponse<ForgotPasswordData>;
+export type ResetPasswordResponse = ApiResponse<null>;
 export type UserRegisterResponse = ApiResponse<RegisterData>;
 
 export interface Tour {
