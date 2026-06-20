@@ -95,3 +95,21 @@ export interface TourLog {
 }
 
 export type TourLogRequest = Omit<TourLog, 'id' | 'tourId' | 'createdAt' | 'updatedAt'>;
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  registrationDate: string;
+}
+
+export interface UpdateProfileRequest {
+  username: string;
+  email: string;
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

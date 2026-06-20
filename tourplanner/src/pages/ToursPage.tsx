@@ -122,6 +122,7 @@ export default function ToursPage() {
         tour={selectedTour}
         onClose={detailActions.stopEditing}
         onSubmit={async (data) => {
+          if (!selectedTour) return;
           const updatedTour = await detailActions.updateTour(
             selectedTour.id,
             data,
@@ -138,6 +139,7 @@ export default function ToursPage() {
         editLog={logState.editingLog}
         onClose={logActions.closeDialog}
         onSubmit={async (data) => {
+          if (!selectedTour) return;
           if (logState.editingLog) {
             const ok = await logActions.updateLog(
               selectedTour.id,
