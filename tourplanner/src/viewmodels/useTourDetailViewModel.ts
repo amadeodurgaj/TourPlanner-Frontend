@@ -13,7 +13,7 @@ interface TourDetailState {
 interface TourDetailActions {
     startEditing: () => void;
     stopEditing: () => void;
-    updateTour: (id: string, data: TourRequest) => Promise<boolean>;
+    updateTour: (id: string, data: TourRequest) => Promise<Tour | null>;
     uploadImage: (tourId: string, file: File) => Promise<string | null>;
     downloadReport: (tourId: string, tourName: string) => Promise<void>;
     clearError: () => void;
@@ -39,20 +39,20 @@ export function useTourDetailViewModel(): { state: TourDetailState; actions: Tou
         setState(prev => ({ ...prev, error: null }));
     }, []);
 
-    const updateTour = useCallback(async (id: string, data: TourRequest): Promise<boolean> => {
+    const updateTour = useCallback(async (id: string, data: TourRequest): Promise<Tour | null> => {
         try {
             const res = await TourService.updateTour(id, data);
-            if (res.success) {
+            if (res.success && res.data) {
                 setState(prev => ({ ...prev, editing: false, error: null }));
-                return true;
+                return res.data;
             }
             const errorMessage = res.message || 'Failed to update tour';
             setState(prev => ({ ...prev, error: errorMessage }));
-            return false;
+            return null;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to update tour';
             setState(prev => ({ ...prev, error: errorMessage || 'Failed to update tour. Please try again.' }));
-            return false;
+            return null;
         }
     }, []);
 

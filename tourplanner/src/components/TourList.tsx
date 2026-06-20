@@ -125,7 +125,7 @@ export function TourList({ tours, selectedId, onSelect, onDelete }: TourListProp
                     onDelete(tour.id);
                   }}
                   aria-label={`Delete ${tour.name}`}
-                  className="rounded-lg p-2 text-muted-foreground/60 opacity-0 transition-smooth hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
+                  className="rounded-lg p-2 text-muted-foreground/70 transition-smooth hover:bg-destructive/10 hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

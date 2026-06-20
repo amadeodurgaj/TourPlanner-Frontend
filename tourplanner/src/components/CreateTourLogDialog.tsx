@@ -49,7 +49,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div

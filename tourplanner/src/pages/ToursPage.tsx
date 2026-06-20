@@ -6,6 +6,7 @@ import { useTourDetailViewModel } from "@/viewmodels/useTourDetailViewModel";
 import { TourDetail } from "@/components/TourDetail";
 import { Sidebar, MobileMenuButton } from "@/components/Sidebar";
 import CreateTourLogDialog from "@/components/CreateTourLogDialog";
+import EditTourDialog from "@/components/EditTourDialog";
 
 export default function ToursPage() {
   const { state, actions } = useTourListViewModel();
@@ -69,7 +70,7 @@ export default function ToursPage() {
             <div className="mx-auto max-w-4xl">
               <TourDetail
                 tour={selectedTour}
-                onEdit={() => {}}
+                onEdit={detailActions.startEditing}
                 onDelete={() => deleteTour(selectedTour.id)}
                 onCreateLog={logActions.openCreateDialog}
                 onImageUpload={(path) => {
@@ -93,6 +94,18 @@ export default function ToursPage() {
                   } else {
                     const ok = await logActions.createLog(selectedTour.id, data);
                     if (ok) logActions.loadLogs(selectedTour.id);
+                  }
+                }}
+              />
+              <EditTourDialog
+                open={detailState.editing}
+                tour={selectedTour}
+                onClose={detailActions.stopEditing}
+                onSubmit={async (data) => {
+                  const updatedTour = await detailActions.updateTour(selectedTour.id, data);
+                  if (updatedTour) {
+                    selectTour(updatedTour);
+                    await refresh();
                   }
                 }}
               />

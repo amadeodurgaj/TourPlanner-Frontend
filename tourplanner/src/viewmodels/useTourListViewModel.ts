@@ -48,15 +48,21 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
     }, []);
 
     const deleteTour = useCallback(async (id: string) => {
+        if (!window.confirm("Delete this tour?")) {
+            return;
+        }
+
         try {
             await TourService.deleteTour(id);
             setState(prev => ({
                 ...prev,
                 tours: prev.tours.filter(t => t.id !== id),
                 selectedTour: prev.selectedTour?.id === id ? null : prev.selectedTour,
+                error: null,
             }));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete tour';
+            window.alert(errorMessage || 'Failed to delete tour. Please try again.');
             setState(prev => ({ ...prev, error: errorMessage || 'Failed to delete tour. Please try again.' }));
         }
     }, []);

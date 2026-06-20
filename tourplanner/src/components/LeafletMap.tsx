@@ -78,7 +78,7 @@ export function LeafletMap({ fromLat, fromLng, toLat, toLng, height = "300px" }:
         <div
             ref={mapRef}
             style={{ height, width: "100%", borderRadius: "0.5rem", overflow: "hidden" }}
-            className="border border-border/50"
+            className="relative z-0 border border-border/50"
         />
     );
 }

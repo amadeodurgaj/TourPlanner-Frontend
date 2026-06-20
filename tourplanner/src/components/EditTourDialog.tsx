@@ -69,9 +69,10 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
       toLocation: form.toLocation.label,
       toLatitude: form.toLocation.latitude,
       toLongitude: form.toLocation.longitude,
-      distance: 0,
-      estimatedTime: null,
-      routeInfo: null,
+      distance: tour?.distance ?? 0,
+      estimatedTime: tour?.estimatedTime ?? null,
+      routeInfo: tour?.routeInfo ?? null,
+      imagePath: tour?.imagePath,
     };
 
     onSubmit(tourData);
@@ -79,7 +80,7 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
