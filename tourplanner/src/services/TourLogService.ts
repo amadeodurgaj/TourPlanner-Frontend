@@ -1,25 +1,60 @@
-import { api } from "@/api/ApiClient";
+import { api, ApiError } from "@/api/ApiClient";
 import { TourLogRequest } from "@/types/api";
 
 export const TourLogService = {
     getLogs: async (tourId: string): Promise<any> => {
-        return api.get(`/api/tours/${tourId}/logs`);
+        try {
+            return await api.get(`/api/tours/${tourId}/logs`);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Failed to load tour logs. Please try again later.');
+        }
     },
 
     getLog: async (tourId: string, logId: string): Promise<any> => {
-        return api.get(`/api/tours/${tourId}/logs/${logId}`);
+        try {
+            return await api.get(`/api/tours/${tourId}/logs/${logId}`);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Failed to load tour log. Please try again later.');
+        }
     },
 
     createLog: async (tourId: string, log: TourLogRequest): Promise<any> => {
-        return api.post(`/api/tours/${tourId}/logs`, log);
+        try {
+            return await api.post(`/api/tours/${tourId}/logs`, log);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Failed to create tour log. Please check your information and try again.');
+        }
     },
 
     updateLog: async (tourId: string, logId: string, log: TourLogRequest): Promise<any> => {
-        return api.put(`/api/tours/${tourId}/logs/${logId}`, log);
+        try {
+            return await api.put(`/api/tours/${tourId}/logs/${logId}`, log);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Failed to update tour log. Please try again.');
+        }
     },
 
     deleteLog: async (tourId: string, logId: string): Promise<any> => {
-        return api.delete(`/api/tours/${tourId}/logs/${logId}`);
+        try {
+            return await api.delete(`/api/tours/${tourId}/logs/${logId}`);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Failed to delete tour log. Please try again.');
+        }
     }
 };
 

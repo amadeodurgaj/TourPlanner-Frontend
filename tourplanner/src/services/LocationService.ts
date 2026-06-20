@@ -1,4 +1,4 @@
-import { api } from "@/api/ApiClient";
+import { api, ApiError } from "@/api/ApiClient";
 import type { LocationSearchResult } from "@/types/api";
 
 export const LocationService = {
@@ -7,10 +7,17 @@ export const LocationService = {
             return [];
         }
         
-        const response = await api.get(
-            `/api/locations/search?q=${encodeURIComponent(query)}`
-        );
-        return response.data || [];
+        try {
+            const response = await api.get<{ data: LocationSearchResult[] }>(
+                `/api/locations/search?q=${encodeURIComponent(query)}`
+            );
+            return response.data || [];
+        } catch (error) {
+            if (error instanceof ApiError) {
+                throw error;
+            }
+            throw new Error('Location search failed. Please try again with a different query.');
+        }
     }
 };
 

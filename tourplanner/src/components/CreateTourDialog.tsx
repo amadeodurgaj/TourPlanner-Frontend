@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CircleX } from "lucide-react";
+import { X } from "lucide-react";
 import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
 import type { LocationSearchResult, TourRequest } from "@/types/api";
 
@@ -82,35 +82,38 @@ export default function CreateTourDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-2xl border border-border bg-primary p-6 shadow-2xl"
+        className="max-h-[calc(100vh-3rem)] w-full max-w-2xl overflow-y-auto rounded-lg border border-border/70 bg-card p-6 shadow-2xl shadow-black/20 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <div className="text-3xl font-bold text-heading text-secondary">Create <span className="text-accent">Tour</span></div>
-            <p className="mt-1 text-base">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
+              Create <span className="text-accent">Tour</span>
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Add the basic tour details to get started.
             </p>
           </div>
-
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-full border border-border p-2 text-secondary transition hover:bg-danger/10 hover:text-danger"
+            className="icon-button"
           >
-            <CircleX size={25} />
+            <X size={20} />
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label
               htmlFor="tour-name"
-              className="mb-2 block text-sm font-medium text-secondary"
+              className="mb-2 block text-sm font-medium text-foreground"
             >
               Name
             </label>
@@ -120,31 +123,31 @@ export default function CreateTourDialog({
               value={form.name}
               onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
               placeholder="Morning Hike"
-              className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
+              className="field-control"
             />
           </div>
 
           <div>
             <label
               htmlFor="tour-description"
-              className="mb-2 block text-sm font-medium text-secondary"
+              className="mb-2 block text-sm font-medium text-foreground"
             >
               Description
             </label>
             <textarea
               id="tour-description"
-              rows={4}
+              rows={3}
               value={form.description}
               onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
               placeholder="A beautiful morning hike through the mountains"
-              className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
+              className="field-control resize-none"
             />
           </div>
 
           <div>
             <label
               htmlFor="transport-type"
-              className="mb-2 block text-sm font-medium text-secondary"
+              className="mb-2 block text-sm font-medium text-foreground"
             >
               Transport Type
             </label>
@@ -152,7 +155,7 @@ export default function CreateTourDialog({
               id="transport-type"
               value={form.transportType}
               onChange={(e) => setForm((prev) => ({ ...prev, transportType: e.target.value }))}
-              className="w-full rounded-xl border border-border bg-primary px-4 py-3 text-secondary outline-none transition focus:border-accent"
+              className="field-control"
             >
               <option value="foot">Foot / Hike</option>
               <option value="bike">Bike</option>
@@ -161,7 +164,7 @@ export default function CreateTourDialog({
             </select>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <PlaceAutocompleteInput
               label="From"
               placeholder="Start location"
@@ -179,19 +182,19 @@ export default function CreateTourDialog({
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="cursor-pointer rounded-xl border border-danger px-4 py-2 text-danger transition hover:bg-danger/10"
+              className="btn-secondary"
             >
               Cancel
             </button>
-
             <button
               type="submit"
               disabled={!isValid}
-              className="cursor-pointer rounded-xl bg-secondary px-4 py-2 text-primary transition disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn-primary"
             >
               Create Tour
             </button>

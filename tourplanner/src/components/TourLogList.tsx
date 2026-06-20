@@ -9,16 +9,16 @@ interface TourLogListProps {
 }
 
 const difficultyColors: Record<string, string> = {
-  EASY: "bg-green-500/15 text-green-400",
-  MEDIUM: "bg-yellow-500/15 text-yellow-400",
-  HARD: "bg-red-500/15 text-red-400",
+  EASY: "bg-success/15 text-success",
+  MEDIUM: "bg-warning/15 text-warning",
+  HARD: "bg-destructive/15 text-destructive",
 };
 
 export function TourLogList({ logs, onEdit, onDelete }: TourLogListProps) {
   if (logs.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-muted-light">No logs yet. Create your first tour log.</p>
+        <p className="text-sm text-muted-foreground">No logs yet. Create your first tour log.</p>
       </div>
     );
   }
@@ -28,56 +28,58 @@ export function TourLogList({ logs, onEdit, onDelete }: TourLogListProps) {
       {logs.map((log) => (
         <li
           key={log.id}
-          className="group p-4 rounded-xl bg-primary border border-border/50 hover:border-border transition-colors"
+          className="group panel-soft p-4 transition-smooth hover:border-border"
         >
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-sm text-muted-light">
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <Calendar className="w-4 h-4" />
-                {new Date(log.dateTime).toLocaleDateString()}
+                <span className="tabular-nums">{new Date(log.dateTime).toLocaleDateString()}</span>
               </div>
               <span
                 className={cn(
-                  "px-2 py-0.5 rounded text-xs font-medium capitalize",
+                  "px-2 py-0.5 rounded-md text-xs font-medium capitalize",
                   difficultyColors[log.difficulty]
                 )}
               >
                 {log.difficulty.toLowerCase()}
               </span>
             </div>
-            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="flex items-center gap-1 opacity-0 transition-smooth group-hover:opacity-100 group-focus-within:opacity-100">
               <button
                 onClick={() => onEdit(log)}
-                className="p-1.5 rounded text-muted hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-accent hover:bg-accent/10 transition-smooth"
+                aria-label="Edit log"
               >
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={() => onDelete(log.id)}
-                className="p-1.5 rounded text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+                className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-smooth"
+                aria-label="Delete log"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-6 mt-3 text-sm">
-            <div className="flex items-center gap-1.5 text-muted">
+          <div className="mt-3 flex flex-wrap items-center gap-6 text-sm">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
               <Gauge className="w-4 h-4 text-accent" />
-              <span>{formatDistance(log.totalDistance)}</span>
+              <span className="tabular-nums">{formatDistance(log.totalDistance)}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-muted">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
               <Timer className="w-4 h-4 text-accent" />
-              <span>{formatTime(log.totalTime)}</span>
+              <span className="tabular-nums">{formatTime(log.totalTime)}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-muted">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
               <Star className="w-4 h-4 text-accent" />
-              <span>{log.rating}/5</span>
+              <span className="tabular-nums">{log.rating}/5</span>
             </div>
           </div>
 
           {log.comment && (
-            <p className="mt-3 text-sm text-muted-light border-t border-border/50 pt-3">
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-3">
               {log.comment}
             </p>
           )}

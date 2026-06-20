@@ -1,5 +1,5 @@
-import { MapPin, Footprints, Bike, Timer } from "lucide-react";
-import { cn, formatDistance, formatTime } from "@/lib/utils";
+import { ArrowRight, Baby, Bike, Car, Footprints, MapPin, Star, Timer, Trash2 } from "lucide-react";
+import { cn, formatDistance } from "@/lib/utils";
 import { API_URL } from "@/api/ApiClient";
 import type { Tour } from "@/types/api";
 
@@ -14,20 +14,20 @@ const transportIcons: Record<string, React.ComponentType<{ className?: string }>
   foot: Footprints,
   bike: Bike,
   running: Footprints,
-  car: Bike,
+  car: Car,
 };
 
 export function TourList({ tours, selectedId, onSelect, onDelete }: TourListProps) {
   if (tours.length === 0) {
     return (
-      <p className="text-sm text-muted px-3 py-8 text-center">
+      <p className="text-sm text-muted-foreground px-3 py-8 text-center">
         No tours yet.
       </p>
     );
   }
 
   return (
-    <ul className="flex flex-col gap-1">
+    <ul className="flex flex-col gap-2">
       {tours.map((tour) => {
         const Icon = transportIcons[tour.transportType] || MapPin;
         const isSelected = tour.id === selectedId;
@@ -45,48 +45,76 @@ export function TourList({ tours, selectedId, onSelect, onDelete }: TourListProp
                 }
               }}
               className={cn(
-                "group relative w-full text-left px-3 py-3 rounded-lg transition-all duration-200 cursor-pointer",
-                isSelected ? "bg-accent/15" : "hover:bg-primary"
+                "group relative w-full cursor-pointer rounded-xl border px-4 py-3.5 text-left transition-smooth hover-lift",
+                isSelected
+                  ? "border-accent/40 bg-accent/10 shadow-soft ring-1 ring-accent/20"
+                  : "border-transparent hover:border-border/70 hover:bg-secondary/80"
               )}
             >
               <div className="flex items-start gap-3">
                 {tour.imagePath ? (
-                  <img
-                    src={`${API_URL}${tour.imagePath}`}
-                    alt=""
-                    className="w-12 h-12 rounded-md object-cover flex-shrink-0"
-                  />
+                  <div className="relative h-12 w-12 flex-shrink-0 rounded-xl overflow-hidden">
+                    <img
+                      src={`${API_URL}${tour.imagePath}`}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
                 ) : (
                   <div
                     className={cn(
-                      "flex-shrink-0 p-1.5 rounded-md",
-                      isSelected ? "bg-accent/20 text-accent" : "bg-primary text-muted"
+                      "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl",
+                      isSelected ? "bg-accent/20 text-accent" : "bg-secondary/80 text-muted-foreground/80"
                     )}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-5 h-5" />
                   </div>
                 )}
 
                 <div className="flex-1 min-w-0">
                   <h4
                     className={cn(
-                      "font-medium text-sm truncate transition-colors",
-                      isSelected ? "text-secondary" : "text-muted group-hover:text-secondary"
+                      "font-semibold text-sm truncate transition-colors",
+                      isSelected ? "text-foreground" : "text-foreground/85 group-hover:text-foreground"
                     )}
                   >
                     {tour.name}
                   </h4>
-                  <p className="text-xs text-muted-light truncate">
-                    {tour.fromLocation} → {tour.toLocation}
+                  <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground/80">
+                    <MapPin className="w-3 h-3 text-muted-foreground/60" />
+                    <span className="truncate">{tour.fromLocation}</span>
+                    <ArrowRight className="h-3 w-3 flex-shrink-0 text-accent/70" />
+                    <span className="truncate">{tour.toLocation}</span>
                   </p>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-light">
-                    <span>{formatDistance(tour.distance)}</span>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground/70">
+                    <span className="tabular-nums font-medium">{formatDistance(tour.distance)}</span>
                     {tour.estimatedTime && (
                       <span className="flex items-center gap-1">
                         <Timer className="w-3 h-3" />
-                        {tour.estimatedTime}
+                        <span className="tabular-nums font-medium">{tour.estimatedTime}</span>
                       </span>
                     )}
+                  </div>
+                  <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                    <span className={cn(
+                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
+                      tour.popularityScore >= 60 ? "bg-success/15 text-success" :
+                      tour.popularityScore >= 20 ? "bg-warning/15 text-warning" :
+                      "bg-muted/50 text-muted-foreground/70"
+                    )}>
+                      <Star className="h-3 w-3" />
+                      {tour.popularityScore}%
+                    </span>
+                    <span className={cn(
+                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold tabular-nums",
+                      tour.childFriendliness >= 60 ? "bg-accent/15 text-accent" :
+                      tour.childFriendliness >= 20 ? "bg-warning/15 text-warning" :
+                      "bg-muted/50 text-muted-foreground/70"
+                    )}>
+                      <Baby className="h-3 w-3" />
+                      {tour.childFriendliness}%
+                    </span>
                   </div>
                 </div>
 
@@ -97,9 +125,9 @@ export function TourList({ tours, selectedId, onSelect, onDelete }: TourListProp
                     onDelete(tour.id);
                   }}
                   aria-label={`Delete ${tour.name}`}
-                  className="opacity-0 group-hover:opacity-100 p-1 rounded text-muted hover:text-danger hover:bg-danger/10 transition-all cursor-pointer"
+                  className="rounded-lg p-2 text-muted-foreground/60 opacity-0 transition-smooth hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 group-focus-within:opacity-100"
                 >
-                  ×
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>

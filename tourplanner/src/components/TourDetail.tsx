@@ -1,4 +1,4 @@
-import { MapPin, Timer, ArrowRight, Pencil, Trash2, Plus, Image, Upload, X, FileDown } from "lucide-react";
+import { MapPin, Timer, ArrowRight, Pencil, Trash2, Plus, Image, Upload, Star, FileDown } from "lucide-react";
 import { useState, useRef } from "react";
 import { cn, formatDistance, formatTime } from "@/lib/utils";
 import { API_URL } from "@/api/ApiClient";
@@ -12,7 +12,7 @@ interface TourDetailProps {
   onDelete: () => void;
   onCreateLog: () => void;
   onImageUpload: (imagePath: string) => void;
-  onDownloadReport?: () => void;
+  onDownloadReport: () => void;
   downloading?: boolean;
   downloadError?: string | null;
   logs?: TourLog[];
@@ -20,19 +20,7 @@ interface TourDetailProps {
   onDeleteLog?: (id: string) => void;
 }
 
-export function TourDetail({
-  tour,
-  onEdit,
-  onDelete,
-  onCreateLog,
-  onImageUpload,
-  onDownloadReport,
-  downloading,
-  downloadError,
-  logs,
-  onEditLog,
-  onDeleteLog
-}: TourDetailProps) {
+export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload, onDownloadReport, downloading, downloadError, logs, onEditLog, onDeleteLog }: TourDetailProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,80 +47,134 @@ export function TourDetail({
   return (
     <div className="flex flex-col gap-6">
       {downloadError && (
-        <div className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+        <div className="rounded-xl bg-destructive/10 px-5 py-4 text-sm text-destructive ring-1 ring-destructive/30">
           {downloadError}
         </div>
       )}
 
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-secondary">{tour.name}</h2>
-          <p className="text-sm text-muted mt-1">{tour.description}</p>
+      {/* Header - Enhanced with better typography and spacing */}
+      <div className="panel-soft flex flex-col gap-5 p-6 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="break-words text-3xl font-bold tracking-tight text-foreground mb-2">{tour.name}</h1>
+          {tour.description && (
+            <p className="max-w-2xl text-base leading-relaxed text-muted-foreground/80">{tour.description}</p>
+          )}
         </div>
         <div className="flex items-center gap-2">
-          {onDownloadReport && (
-            <button
-              onClick={onDownloadReport}
-              disabled={downloading}
-              className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Download PDF report"
-            >
-              <FileDown className={`w-4 h-4 ${downloading ? "animate-pulse" : ""}`} />
-            </button>
-          )}
+          <button
+            onClick={onDownloadReport}
+            disabled={downloading}
+            className="icon-button hover:text-accent/80 hover:bg-accent/10"
+            aria-label="Download PDF report"
+          >
+            <FileDown className={`w-5 h-5 ${downloading ? "animate-pulse" : ""}`} />
+          </button>
           <button
             onClick={onEdit}
-            className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer"
+            className="icon-button hover:text-accent/80 hover:bg-accent/10"
+            aria-label="Edit tour"
           >
-            <Pencil className="w-4 h-4" />
+            <Pencil className="w-5 h-5" />
           </button>
           <button
             onClick={onDelete}
-            className="p-2 rounded-lg text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+            className="icon-button hover:bg-destructive/15 hover:text-destructive"
+            aria-label="Delete tour"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl bg-primary border border-border/50">
-          <p className="text-xs text-muted-light uppercase tracking-wider mb-1">From</p>
-          <p className="text-sm text-secondary font-medium flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
-            {tour.fromLocation}
+      {/* Location cards - Enhanced with better visual hierarchy */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="panel-soft p-5 transition-smooth hover:border-border/80">
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">From Location</p>
+          <p className="text-lg text-foreground font-medium flex items-center gap-3">
+            <MapPin className="w-5 h-5 text-accent flex-shrink-0" />
+            <span className="truncate">{tour.fromLocation}</span>
           </p>
         </div>
-        <div className="p-4 rounded-xl bg-primary border border-border/50">
-          <p className="text-xs text-muted-light uppercase tracking-wider mb-1">To</p>
-          <p className="text-sm text-secondary font-medium flex items-center gap-2">
-            <ArrowRight className="w-4 h-4 text-accent flex-shrink-0" />
-            {tour.toLocation}
-          </p>
-        </div>
-        <div className="p-4 rounded-xl bg-primary border border-border/50">
-          <p className="text-xs text-muted-light uppercase tracking-wider mb-1">Distance</p>
-          <p className="text-lg font-semibold text-secondary">{formatDistance(tour.distance)}</p>
-        </div>
-        <div className="p-4 rounded-xl bg-primary border border-border/50">
-          <p className="text-xs text-muted-light uppercase tracking-wider mb-1">Est. Time</p>
-          <p className="text-lg font-semibold text-secondary flex items-center gap-2">
-            <Timer className="w-4 h-4 text-accent" />
-            {tour.estimatedTime || "—"}
+        <div className="panel-soft p-5 transition-smooth hover:border-border/80">
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">To Location</p>
+          <p className="text-lg text-foreground font-medium flex items-center gap-3">
+            <ArrowRight className="w-5 h-5 text-accent flex-shrink-0" />
+            <span className="truncate">{tour.toLocation}</span>
           </p>
         </div>
       </div>
 
-      <div className="p-4 rounded-xl bg-primary border border-border/50">
-        <p className="text-xs text-muted-light uppercase tracking-wider mb-2">Transport</p>
-        <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium bg-accent/15 text-accent capitalize">
+      {/* Stats - Enhanced with better visual presentation */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="panel-soft p-5">
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">Distance</p>
+          <p className="text-2xl font-bold text-foreground tabular-nums text-accent">{formatDistance(tour.distance)}</p>
+        </div>
+        <div className="panel-soft p-5">
+          <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">Estimated Time</p>
+          <p className="text-2xl font-bold text-foreground flex items-center gap-3">
+            <Timer className="w-6 h-6 text-accent/80" />
+            <span className="tabular-nums">{tour.estimatedTime || "Not set"}</span>
+          </p>
+        </div>
+      </div>
+
+      {/* Transport - Enhanced styling */}
+      <div className="panel-soft p-5">
+        <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-3 font-medium">Transport Type</p>
+        <span className="inline-flex rounded-xl bg-gradient-to-r from-accent/20 to-accent/10 px-4 py-2 text-lg font-semibold capitalize text-accent ring-1 ring-accent/25 shadow-soft">
           {tour.transportType}
         </span>
       </div>
 
-      <div className="p-4 rounded-xl bg-primary border border-border/50">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-medium text-secondary">Tour Image</p>
+      {/* Scores - Enhanced with better progress bars */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="panel-soft p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Star className="w-5 h-5 text-success" />
+            <p className="text-sm text-muted-foreground/70 uppercase tracking-wider font-medium">Popularity Score</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-3 rounded-full bg-muted/80 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500 ease-out shadow-soft"
+                style={{
+                  width: `${tour.popularityScore}%`,
+                  background: tour.popularityScore >= 60 ? "linear-gradient(90deg, var(--color-success), var(--color-success)/80)" : 
+                           tour.popularityScore >= 20 ? "linear-gradient(90deg, var(--color-warning), var(--color-warning)/80)" :
+                           "linear-gradient(90deg, var(--color-muted-foreground), var(--color-muted-foreground)/60)"
+                }}
+              />
+            </div>
+            <span className="text-2xl font-bold text-foreground tabular-nums">{tour.popularityScore}%</span>
+          </div>
+        </div>
+        <div className="panel-soft p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Star className="w-5 h-5 text-accent" />
+            <p className="text-sm text-muted-foreground/70 uppercase tracking-wider font-medium">Child-Friendly</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-3 rounded-full bg-muted/80 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500 ease-out shadow-soft"
+                style={{
+                  width: `${tour.childFriendliness}%`,
+                  background: tour.childFriendliness >= 60 ? "linear-gradient(90deg, var(--color-accent), var(--color-accent)/80)" : 
+                           tour.childFriendliness >= 20 ? "linear-gradient(90deg, var(--color-warning), var(--color-warning)/80)" :
+                           "linear-gradient(90deg, var(--color-muted-foreground), var(--color-muted-foreground)/60)"
+                }}
+              />
+            </div>
+            <span className="text-2xl font-bold text-foreground tabular-nums">{tour.childFriendliness}%</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Image - Enhanced with better visual presentation */}
+      <div className="panel-soft p-5">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-lg font-semibold text-foreground">Tour Image</p>
           <input
             type="file"
             ref={fileInputRef}
@@ -143,142 +185,153 @@ export function TourDetail({
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            className="btn-secondary px-4 py-2 text-sm hover:bg-accent/10 hover:text-accent"
           >
             {uploading ? (
-              <span className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+              <span className="spinner-sm" />
             ) : (
               <Upload className="w-4 h-4" />
             )}
-            {uploading ? "Uploading..." : "Upload Image"}
+            <span>{uploading ? "Uploading..." : "Upload Image"}</span>
           </button>
         </div>
         {tour.imagePath ? (
-          <div className="relative aspect-video rounded-lg overflow-hidden">
+          <div className="relative aspect-video overflow-hidden rounded-xl bg-muted/80 ring-1 ring-border/70 shadow-medium">
             <img
               src={`${API_URL}${tour.imagePath}`}
               alt={tour.name}
               className="w-full h-full object-cover"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
           </div>
         ) : (
-          <div className="aspect-video rounded-lg bg-primary border border-dashed border-border/50 flex items-center justify-center">
+          <div className="flex aspect-video items-center justify-center rounded-xl border-2 border-dashed border-border/80 bg-secondary/80">
             <div className="text-center">
-              <Image className="w-8 h-8 text-muted-light mx-auto mb-2" />
-              <p className="text-sm text-muted-light">No image uploaded</p>
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                <Image className="w-6 h-6 text-muted-foreground/70" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground/80">No image uploaded</p>
+              <p className="text-xs text-muted-foreground/60 mt-1.5">Click upload to add a photo</p>
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-4 rounded-xl bg-primary border border-border/50">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-sm font-medium text-secondary">Map</p>
+      {/* Map - Enhanced styling */}
+      <div className="panel-soft p-5">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-lg font-semibold text-foreground">Route Map</p>
         </div>
         {tour.fromLatitude && tour.fromLongitude && tour.toLatitude && tour.toLongitude ? (
+          <div className="rounded-xl overflow-hidden shadow-medium">
             <LeafletMap
-                fromLat={tour.fromLatitude}
-                fromLng={tour.fromLongitude}
-                toLat={tour.toLatitude}
-                toLng={tour.toLongitude}
-                height="300px"
+              fromLat={tour.fromLatitude}
+              fromLng={tour.fromLongitude}
+              toLat={tour.toLatitude}
+              toLng={tour.toLongitude}
+              height="350px"
             />
+          </div>
         ) : (
-            <div className="aspect-video rounded-lg bg-primary border border-dashed border-border/50 flex items-center justify-center">
-                <div className="text-center">
-                    <MapPin className="w-8 h-8 text-muted-light mx-auto mb-2" />
-                    <p className="text-sm text-muted-light">Map not available</p>
-                    <p className="text-xs text-muted-light mt-1">Location coordinates missing</p>
-                </div>
+          <div className="flex aspect-video items-center justify-center rounded-xl border-2 border-dashed border-border/80 bg-secondary/80">
+            <div className="text-center">
+              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                <MapPin className="w-6 h-6 text-muted-foreground/70" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground/80">Map not available</p>
+              <p className="text-xs text-muted-foreground/60 mt-1.5">Add coordinates to see the route</p>
             </div>
+          </div>
         )}
       </div>
 
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-secondary">Tour Logs</h3>
-        <button
-          onClick={onCreateLog}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-accent text-primary hover:bg-accent-hover transition-colors cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          Add Log
-        </button>
-      </div>
-
-      {logs && logs.length > 0 ? (
-        <div className="space-y-4">
-          {logs.map((log) => (
-            <div key={log.id} className="p-4 rounded-xl bg-primary border border-border/50 hover:border-border transition-colors">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-1 rounded-full bg-accent/15 text-accent font-medium">
-                      {log.difficulty}
-                    </span>
-                    <span className="text-xs text-muted-light">
-                      {new Date(log.dateTime).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4 text-sm">
-                    <span className="flex items-center gap-1 text-muted">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {formatTime(log.totalTime)}
-                    </span>
-                    <span className="flex items-center gap-1 text-muted">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      </svg>
-                      {formatDistance(log.totalDistance)}
-                    </span>
-                    <span className="flex items-center gap-1 text-muted">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                      </svg>
-                      {log.rating}/5
-                    </span>
-                  </div>
-                  {log.comment && (
-                    <p className="mt-2 text-sm text-muted-light">
-                      {log.comment}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-2 ml-4">
-                  {onEditLog && (
-                    <button
-                      onClick={() => onEditLog(log)}
-                      className="p-1.5 rounded text-muted hover:text-accent hover:bg-accent/10 transition-colors"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                  )}
-                  {onDeleteLog && (
-                    <button
-                      onClick={() => onDeleteLog(log.id)}
-                      className="p-1.5 rounded text-muted hover:text-danger hover:bg-danger/10 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-sm text-muted-light">No logs yet for this tour.</p>
+      {/* Tour Logs - Enhanced section header */}
+      <div>
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-2xl font-bold text-foreground">Tour Logs</h2>
           <button
             onClick={onCreateLog}
-            className="mt-4 flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+            className="btn-primary px-4 py-2.5 shadow-sm hover:shadow-md"
           >
             <Plus className="w-4 h-4" />
-            Add First Log
+            Add Log
           </button>
         </div>
-      )}
+
+        {logs && logs.length > 0 ? (
+          <div className="space-y-3">
+            {logs.map((log) => (
+              <div key={log.id} className="panel-soft p-4 transition-smooth hover:border-border">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-2">
+                      <span className="text-xs px-2 py-1 rounded-md bg-accent/10 text-accent font-medium">
+                        {log.difficulty}
+                      </span>
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {new Date(log.dateTime).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-4 text-sm">
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <Timer className="w-4 h-4" />
+                        <span className="tabular-nums">{formatTime(log.totalTime)}</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <MapPin className="w-4 h-4" />
+                        <span className="tabular-nums">{formatDistance(log.totalDistance)}</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 text-muted-foreground">
+                        <Star className="w-4 h-4" />
+                        <span className="tabular-nums">{log.rating}/5</span>
+                      </span>
+                    </div>
+                    {log.comment && (
+                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                        {log.comment}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-1 ml-4">
+                    {onEditLog && (
+                      <button
+                        onClick={() => onEditLog(log)}
+                        className="rounded-md p-1.5 text-muted-foreground transition-smooth hover:bg-accent/10 hover:text-accent"
+                        aria-label="Edit log"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </button>
+                    )}
+                    {onDeleteLog && (
+                      <button
+                        onClick={() => onDeleteLog(log.id)}
+                        className="rounded-md p-1.5 text-muted-foreground transition-smooth hover:bg-destructive/10 hover:text-destructive"
+                        aria-label="Delete log"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="panel-soft flex flex-col items-center justify-center py-12 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary">
+              <Plus className="w-5 h-5 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">No logs yet for this tour</p>
+            <button
+              onClick={onCreateLog}
+              className="btn-secondary mt-3 text-accent"
+            >
+              <Plus className="w-4 h-4" />
+              Add First Log
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

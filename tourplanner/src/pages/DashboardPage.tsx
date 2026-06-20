@@ -19,6 +19,13 @@ const TRANSPORT_ICONS: Record<string, typeof Footprints> = {
   car: CarFront,
 };
 
+const TRANSPORT_COLORS: Record<string, string> = {
+  foot: "var(--color-accent)",
+  bike: "var(--color-success)",
+  running: "var(--color-warning)",
+  car: "var(--color-muted-foreground)",
+};
+
 export default function DashboardPage() {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,16 +61,16 @@ export default function DashboardPage() {
   };
 
   const totalTours = tours.length;
-  const totalDistance = tours.reduce((sum, tour) => sum + tour.distance, 0);
+  const totalDistance = tours.reduce((sum, t) => sum + t.distance, 0);
   const avgPopularity = totalTours > 0
-    ? Math.round(tours.reduce((sum, tour) => sum + tour.popularityScore, 0) / totalTours)
+    ? Math.round(tours.reduce((sum, t) => sum + t.popularityScore, 0) / totalTours)
     : 0;
   const avgChildFriendly = totalTours > 0
-    ? Math.round(tours.reduce((sum, tour) => sum + tour.childFriendliness, 0) / totalTours)
+    ? Math.round(tours.reduce((sum, t) => sum + t.childFriendliness, 0) / totalTours)
     : 0;
 
-  const transportCounts = tours.reduce((acc, tour) => {
-    const key = tour.transportType || "other";
+  const transportCounts = tours.reduce((acc, t) => {
+    const key = t.transportType || "other";
     acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
@@ -73,6 +80,7 @@ export default function DashboardPage() {
       type,
       label: TRANSPORT_LABELS[type] || type,
       Icon: TRANSPORT_ICONS[type] || Footprints,
+      color: TRANSPORT_COLORS[type] || "var(--color-muted-foreground)",
       count,
       pct: totalTours > 0 ? Math.round((count / totalTours) * 100) : 0,
     }))
@@ -84,128 +92,175 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[calc(100vh-80px)] items-center justify-center">
-        <p className="text-muted">Loading dashboard...</p>
+      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="spinner-md border-t-accent" />
+          <p className="text-sm text-muted-foreground/80">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mx-auto max-w-5xl p-4 md:p-8">
-      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex items-center justify-between mb-10">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-secondary">Dashboard</h1>
-          <p className="mt-2 text-base text-muted">Overview of all your tours</p>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">Dashboard</h1>
+          <p className="mt-2 text-base text-muted-foreground/80">Overview of all your tours</p>
         </div>
         <button
           onClick={() => setIsCreateTourOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 font-medium text-primary transition-colors hover:bg-accent-hover"
+          className="btn-primary px-5 py-3 shadow-sm hover:shadow-md"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="w-4 h-4" />
           Create Tour
         </button>
       </div>
 
       {totalTours === 0 ? (
         <div className="flex flex-col items-center justify-center py-28 text-center">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-accent/10">
-            <Route className="h-10 w-10 text-accent" />
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
+            <Route className="w-10 h-10 text-accent/80" />
           </div>
-          <h2 className="mb-3 text-2xl font-semibold text-secondary">No tours yet</h2>
-          <p className="mb-8 max-w-sm text-base text-muted">
+          <h2 className="text-2xl font-semibold text-foreground mb-3">No tours yet</h2>
+          <p className="text-base text-muted-foreground/80 mb-8 max-w-sm">
             Create your first tour to see statistics and insights here.
           </p>
           <button
             onClick={() => setIsCreateTourOpen(true)}
-            className="flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 font-medium text-primary transition-colors hover:bg-accent-hover"
+            className="btn-primary px-6 py-3.5 shadow-lg hover:shadow-xl hover:scale-105"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="w-4 h-4" />
             Create Your First Tour
           </button>
         </div>
       ) : (
         <div className="flex flex-col gap-8">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <StatCard icon={Route} label="Total Tours" value={totalTours.toString()} />
-            <StatCard
-              icon={MapPin}
-              label="Total Distance"
-              value={`${totalDistance < 10 ? totalDistance.toFixed(1) : Math.round(totalDistance)} km`}
-            />
-            <StatCard icon={Star} label="Avg Popularity" value={`${avgPopularity}%`} />
-            <StatCard icon={Heart} label="Avg Child-Friendly" value={`${avgChildFriendly}%`} />
+          <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+            {/* Total Tours Card */}
+            <div className="panel-soft p-6 hover-lift transition-smooth">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
+                  <Route className="w-6 h-6 text-accent" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-foreground tabular-nums">{totalTours}</p>
+              <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Total Tours</p>
+            </div>
+
+            {/* Total Distance Card */}
+            <div className="panel-soft p-6 hover-lift transition-smooth">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-success/15 to-success/5 ring-1 ring-success/20">
+                  <MapPin className="w-6 h-6 text-success" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-foreground tabular-nums">
+                {totalDistance < 10 ? totalDistance.toFixed(1) : Math.round(totalDistance)}
+                <span className="text-xl text-muted-foreground/80 ml-1">km</span>
+              </p>
+              <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Total Distance</p>
+            </div>
+
+            {/* Avg Popularity Card */}
+            <div className="panel-soft p-6 hover-lift transition-smooth">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-warning/15 to-warning/5 ring-1 ring-warning/20">
+                  <Star className="w-6 h-6 text-warning" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-foreground tabular-nums">{avgPopularity}<span className="text-xl text-muted-foreground/80 ml-1">%</span></p>
+              <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Avg Popularity</p>
+            </div>
+
+            {/* Avg Child-Friendly Card */}
+            <div className="panel-soft p-6 hover-lift transition-smooth">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
+                  <Heart className="w-6 h-6 text-accent" />
+                </div>
+              </div>
+              <p className="text-4xl font-bold text-foreground tabular-nums">{avgChildFriendly}<span className="text-xl text-muted-foreground/80 ml-1">%</span></p>
+              <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Avg Child-Friendly</p>
+            </div>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <section className="rounded-xl border border-border/50 bg-primary p-6">
-              <h2 className="mb-5 text-lg font-semibold uppercase tracking-wider text-secondary">
-                Transport Breakdown
-              </h2>
+            {/* Transport Breakdown - Enhanced */}
+            <div className="panel-soft p-6">
+              <h2 className="text-lg font-semibold text-foreground uppercase tracking-wider mb-5">Transport Breakdown</h2>
               <div className="space-y-5">
-                {transportData.map(({ type, label, Icon, count, pct }) => (
-                  <div key={type}>
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex items-center gap-3 text-secondary">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
-                          <Icon className="h-4 w-4 text-accent" />
+                {transportData.map(({ type, label, Icon, color, count, pct }) => (
+                  <div key={type} className="group">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3 text-foreground">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: color + "15" }}>
+                          <Icon className="w-4 h-4" style={{ color }} />
                         </div>
                         <span className="font-medium">{label}</span>
                       </div>
-                      <span className="text-sm font-medium tabular-nums text-muted">
+                      <span className="text-sm text-muted-foreground/80 tabular-nums font-medium">
                         {count} ({pct}%)
                       </span>
                     </div>
-                    <div className="h-2.5 overflow-hidden rounded-full bg-secondary/10">
-                      <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                    <div className="h-3 rounded-full bg-muted/80 overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500 group-hover:shadow-soft"
+                        style={{ width: `${pct}%`, backgroundColor: color }}
+                      />
                     </div>
                   </div>
                 ))}
               </div>
-            </section>
+            </div>
 
-            <section className="rounded-xl border border-border/50 bg-primary p-6">
-              <h2 className="mb-5 text-lg font-semibold uppercase tracking-wider text-secondary">
-                Recent Tours
-              </h2>
-              <div className="space-y-4">
-                {recentTours.map((tour) => {
-                  const Icon = TRANSPORT_ICONS[tour.transportType] || Footprints;
-                  return (
-                    <button
-                      key={tour.id}
-                      onClick={() => navigate("/tours")}
-                      className="flex w-full items-center justify-between rounded-xl border border-border/50 p-4 text-left transition-colors hover:border-accent/50 hover:bg-accent/5"
-                    >
-                      <div className="flex min-w-0 items-center gap-4">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-secondary/10">
-                          <Icon className="h-5 w-5 text-muted" />
+            {/* Recent Tours - Enhanced */}
+            <div className="panel-soft p-6">
+              <h2 className="text-lg font-semibold text-foreground uppercase tracking-wider mb-5">Recent Tours</h2>
+              {recentTours.length === 0 ? (
+                <p className="text-base text-muted-foreground/80 text-center py-6">No tours created yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {recentTours.map((tour) => {
+                    const Icon = TRANSPORT_ICONS[tour.transportType] || Footprints;
+                    return (
+                      <div
+                        key={tour.id}
+                        className="flex items-center justify-between rounded-xl border border-border/60 p-4 transition-smooth hover:border-border hover:bg-accent/5 cursor-pointer group"
+                        onClick={() => navigate("/tours")}
+                      >
+                        <div className="flex items-center gap-4 min-w-0">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/80 flex-shrink-0">
+                            <Icon className="w-5 h-5 text-muted-foreground/80 group-hover:text-accent transition-colors" />
+                          </div>
+                          <span className="text-base text-foreground font-medium truncate">{tour.name}</span>
                         </div>
-                        <span className="truncate font-medium text-secondary">{tour.name}</span>
+                        <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+                          <span className="badge badge-accent">
+                            <Star className="w-4 h-4" />
+                            {tour.popularityScore}%
+                          </span>
+                          <span className="badge badge-success">
+                            <Heart className="w-4 h-4" />
+                            {tour.childFriendliness}%
+                          </span>
+                        </div>
                       </div>
-                      <div className="ml-4 flex flex-shrink-0 items-center gap-3 text-sm text-muted">
-                        <span className="flex items-center gap-1">
-                          <Star className="h-4 w-4" />
-                          {tour.popularityScore}%
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {tour.childFriendliness}%
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="flex justify-center">
+          {/* View All Tours Button - Enhanced */}
+          <div className="flex justify-center mt-8">
             <button
               onClick={() => navigate("/tours")}
-              className="flex items-center gap-2 rounded-xl border border-border/50 px-6 py-3.5 text-secondary transition-colors hover:border-accent/50 hover:text-accent"
+              className="btn-secondary px-6 py-3.5 border-border/80 hover:border-accent/40"
             >
               View All Tours
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -217,25 +272,5 @@ export default function DashboardPage() {
         onSubmit={handleCreateTour}
       />
     </div>
-  );
-}
-
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Route;
-  label: string;
-  value: string;
-}) {
-  return (
-    <section className="rounded-xl border border-border/50 bg-primary p-6">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
-        <Icon className="h-6 w-6 text-accent" />
-      </div>
-      <p className="text-3xl font-bold tabular-nums text-secondary">{value}</p>
-      <p className="mt-2 text-sm font-medium uppercase tracking-wider text-muted">{label}</p>
-    </section>
   );
 }

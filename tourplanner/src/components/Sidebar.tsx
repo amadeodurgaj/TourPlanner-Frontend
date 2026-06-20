@@ -1,6 +1,8 @@
-import { Menu, X, Plus } from "lucide-react";
+import { Menu, X, Plus, Search, Download, Upload, RefreshCw } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { cn } from "../lib/utils";
 import { TourList } from "./TourList";
+import { TourService } from "@/services/TourService";
 import type { Tour } from "@/types/api";
 
 interface SidebarProps {
@@ -11,6 +13,9 @@ interface SidebarProps {
   selectedTourId?: string;
   onSelectTour?: (tour: Tour) => void;
   onDeleteTour?: (id: string) => void;
+  searchQuery?: string;
+  onSearch?: (query: string) => void;
+  onRefresh?: () => void;
 }
 
 export function Sidebar({
@@ -21,39 +26,115 @@ export function Sidebar({
   selectedTourId,
   onSelectTour,
   onDeleteTour,
+  searchQuery = "",
+  onSearch,
+  onRefresh,
 }: SidebarProps) {
+  const [query, setQuery] = useState(searchQuery);
+  const [importing, setImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setQuery(searchQuery);
+  }, [searchQuery]);
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      onSearch?.(value);
+    }, 300);
+  };
+
+  const handleExport = async () => {
+    try {
+      await TourService.exportTours();
+    } catch {
+      console.error("Export failed");
+    }
+  };
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      await TourService.importTours(file);
+      onRefresh?.();
+    } catch {
+      console.error("Import failed");
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   return (
     <>
+      {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm transition-opacity md:hidden"
           onClick={onClose}
         />
       )}
 
+      {/* Sidebar - Enhanced with better shadows and background */}
       <aside
         className={cn(
-          "fixed left-0 top-0 z-40 h-screen w-72 bg-primary border-r border-border/50 transition-transform duration-300 ease-out md:translate-x-0 md:top-navbar md:left-0 md:h-[calc(100vh-navbar)] md:w-72",
+          "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-80 max-w-[86vw] border-r border-border/60 bg-card/95 backdrop-blur-lg shadow-strong md:translate-x-0 md:shadow-soft transition-transform duration-300 ease-out",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between p-4 border-b border-border/50 md:hidden">
-            <h2 className="text-xl font-bold text-secondary">Tours</h2>
+          {/* Mobile header */}
+          <div className="flex items-center justify-between border-b border-border/70 p-4 md:hidden">
+            <h2 className="text-lg font-semibold text-foreground">Tours</h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-muted hover:text-secondary hover:bg-primary transition-colors cursor-pointer"
+              className="icon-button"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          {/* Search - Enhanced with better focus states */}
+          <div className="border-b border-border/60 p-4">
+            <div className="relative group">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/80 group-focus-within:text-accent transition-colors" />
+              <input
+                type="text"
+                placeholder="Search tours..."
+                value={query}
+                onChange={(e) => handleQueryChange(e.target.value)}
+                className="field-control pl-11 focus:ring-accent/20"
+              />
+            </div>
+          </div>
+
+          {/* Tour list - Enhanced with better spacing and hierarchy */}
+          <div className="flex-1 overflow-y-auto p-4 scrollbar-hide">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-medium text-muted-light uppercase tracking-wider">
+              <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
                 Your Tours
-              </h2>
-              <span className="text-xs text-muted-light">{tours.length}</span>
+              </h3>
+              <div className="flex items-center gap-1.5">
+                {onRefresh && (
+                  <button
+                    onClick={onRefresh}
+                    className="rounded-lg p-2 text-muted-foreground/80 transition-smooth hover:bg-accent/10 hover:text-accent active-press"
+                    title="Refresh"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                )}
+                <span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent font-medium tabular-nums">{tours.length}</span>
+              </div>
             </div>
 
             {onSelectTour && onDeleteTour ? (
@@ -64,21 +145,56 @@ export function Sidebar({
                 onDelete={onDeleteTour}
               />
             ) : (
-              <p className="text-sm text-muted-light text-center py-8">
-                No tours yet.
-              </p>
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-secondary/80">
+                  <Search className="w-6 h-6 text-muted-foreground/70" />
+                </div>
+                <p className="text-sm font-medium text-foreground/80">No tours yet</p>
+                <p className="text-xs text-muted-foreground/60 mt-1.5 max-w-xs">
+                  Start your adventure by creating your first tour
+                </p>
+              </div>
             )}
           </div>
 
-          <div className="p-4 border-t border-border/50">
-          <button
-            onClick={onCreateTour}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-accent text-primary font-medium hover:bg-accent-hover transition-colors cursor-pointer"
-          >
+          {/* Actions - Enhanced button styling */}
+          <div className="space-y-3 border-t border-border/60 p-4">
+            <button
+              onClick={onCreateTour}
+              className="btn-primary w-full shadow-sm hover:shadow-md"
+            >
               <Plus className="w-4 h-4" />
               Create Tour
             </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleExport}
+                className="btn-secondary text-xs hover:border-accent/40 hover:bg-accent/10"
+                title="Export Tours"
+              >
+                <Download className="w-4 h-4" />
+                <span>Export</span>
+              </button>
+              <button
+                onClick={handleImportClick}
+                disabled={importing}
+                className="btn-secondary text-xs hover:border-accent/40 hover:bg-accent/10 disabled:opacity-60"
+                title="Import Tours"
+              >
+                <Upload className="w-4 h-4" />
+                <span>{importing ? "..." : "Import"}</span>
+              </button>
+            </div>
           </div>
+
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept=".json"
+            onChange={handleFileSelect}
+            className="hidden"
+          />
         </div>
       </aside>
     </>
@@ -94,7 +210,7 @@ export function MobileMenuButton({ isOpen, onClick }: MobileMenuButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="fixed top-24 left-4 z-50 p-2.5 rounded-xl bg-primary border border-border/50 text-secondary hover:text-accent hover:border-accent/50 transition-colors md:hidden shadow-lg cursor-pointer"
+      className="fixed left-4 top-20 z-50 rounded-lg border border-border/70 bg-card p-2.5 text-foreground shadow-lg transition-smooth hover:border-accent/50 hover:text-accent active-press md:hidden"
       aria-label="Toggle menu"
     >
       {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CircleX } from "lucide-react";
+import { X } from "lucide-react";
 import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
 import { cn } from "@/lib/utils";
 import type { LocationSearchResult, Tour, TourRequest } from "@/types/api";
@@ -79,31 +79,33 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-2xl border border-border bg-primary p-6 shadow-2xl"
+        className="max-h-[calc(100vh-3rem)] w-full max-w-2xl overflow-y-auto rounded-lg border border-border/70 bg-card p-6 shadow-2xl shadow-black/20 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-secondary">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
               Edit <span className="text-accent">Tour</span>
             </h2>
-            <p className="text-sm text-muted mt-1">Update tour details.</p>
+            <p className="text-sm text-muted-foreground mt-1">Update tour details.</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+            className="icon-button"
           >
-            <CircleX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="edit-tour-name" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="edit-tour-name" className="block text-sm font-medium text-foreground mb-2">
               Name
             </label>
             <input
@@ -111,12 +113,12 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
               type="text"
               value={form.name}
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+              className="field-control"
             />
           </div>
 
           <div>
-            <label htmlFor="edit-tour-description" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="edit-tour-description" className="block text-sm font-medium text-foreground mb-2">
               Description
             </label>
             <textarea
@@ -124,19 +126,19 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
               rows={3}
               value={form.description}
               onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors resize-none"
+              className="field-control resize-none"
             />
           </div>
 
           <div>
-            <label htmlFor="edit-transport" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="edit-transport" className="block text-sm font-medium text-foreground mb-2">
               Transport Type
             </label>
             <select
               id="edit-transport"
               value={form.transportType}
               onChange={(e) => setForm((p) => ({ ...p, transportType: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+              className="field-control"
             >
               {transportTypes.map((t) => (
                 <option key={t} value={t} className="capitalize">
@@ -163,11 +165,12 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-danger text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+              className="btn-secondary"
             >
               Cancel
             </button>
@@ -175,7 +178,7 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
               type="submit"
               disabled={!isValid}
               className={cn(
-                "px-4 py-2 rounded-xl bg-accent text-primary font-medium hover:bg-accent-hover transition-colors cursor-pointer",
+                "btn-primary",
                 !isValid && "opacity-50 cursor-not-allowed"
               )}
             >

@@ -1,4 +1,4 @@
-import { API_URL } from '@/api/ApiClient';
+import { API_URL, ApiError } from '@/api/ApiClient';
 
 export const ImageService = {
     uploadTourImage: async (tourId: string, file: File) => {
@@ -12,7 +12,13 @@ export const ImageService = {
         });
 
         if (!response.ok) {
-            throw new Error(`Upload failed: ${response.statusText}`);
+            try {
+                const errorData = await response.json();
+                const errorMessage = errorData.message || `Upload failed: ${response.statusText}`;
+                throw new Error(errorMessage);
+            } catch {
+                throw new Error(`Upload failed: ${response.statusText}`);
+            }
         }
         return response.json();
     }

@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { TourService } from '@/services/TourService';
 import { ImageService } from '@/services/ImageService';
-import type { TourRequest } from '@/types/api';
+import type { Tour, TourRequest } from '@/types/api';
 
 interface TourDetailState {
     editing: boolean;

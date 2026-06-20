@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CircleX } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TourLog, TourLogRequest } from "@/types/api";
 
@@ -49,31 +49,33 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-2xl border border-border bg-primary p-6 shadow-2xl"
+        className="max-h-[calc(100vh-3rem)] w-full max-w-lg overflow-y-auto rounded-lg border border-border/70 bg-card p-6 shadow-2xl shadow-black/20 animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Header */}
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-secondary">
+            <h2 className="text-2xl font-bold text-foreground tracking-tight">
               {editLog ? "Edit" : "Add"} <span className="text-accent">Tour Log</span>
             </h2>
-            <p className="text-sm text-muted mt-1">Record your tour experience.</p>
+            <p className="text-sm text-muted-foreground mt-1">Record your tour experience.</p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full text-muted hover:text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+            className="icon-button"
           >
-            <CircleX className="w-5 h-5" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="log-date" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="log-date" className="block text-sm font-medium text-foreground mb-2">
               Date & Time
             </label>
             <input
@@ -81,13 +83,13 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
               type="datetime-local"
               value={form.dateTime}
               onChange={(e) => setForm((p) => ({ ...p, dateTime: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+              className="field-control"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label htmlFor="log-distance" className="block text-sm font-medium text-secondary mb-2">
+              <label htmlFor="log-distance" className="block text-sm font-medium text-foreground mb-2">
                 Distance (km)
               </label>
               <input
@@ -98,11 +100,11 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
                 value={form.totalDistance}
                 onChange={(e) => setForm((p) => ({ ...p, totalDistance: e.target.value }))}
                 placeholder="5.0"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+                className="field-control"
               />
             </div>
             <div>
-              <label htmlFor="log-time" className="block text-sm font-medium text-secondary mb-2">
+              <label htmlFor="log-time" className="block text-sm font-medium text-foreground mb-2">
                 Time (minutes)
               </label>
               <input
@@ -112,20 +114,20 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
                 value={form.totalTime}
                 onChange={(e) => setForm((p) => ({ ...p, totalTime: e.target.value }))}
                 placeholder="30"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+                className="field-control"
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="log-difficulty" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="log-difficulty" className="block text-sm font-medium text-foreground mb-2">
               Difficulty
             </label>
             <select
               id="log-difficulty"
               value={form.difficulty}
               onChange={(e) => setForm((p) => ({ ...p, difficulty: e.target.value as typeof difficulties[number] }))}
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors"
+              className="field-control"
             >
               {difficulties.map((d) => (
                 <option key={d} value={d}>
@@ -136,7 +138,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-secondary mb-2">Rating</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -144,10 +146,10 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
                   type="button"
                   onClick={() => setForm((p) => ({ ...p, rating: star }))}
                   className={cn(
-                    "w-10 h-10 rounded-lg text-lg font-medium transition-colors cursor-pointer",
+                    "h-10 w-10 rounded-lg text-sm font-semibold transition-smooth active-press",
                     star <= form.rating
-                      ? "bg-accent text-primary"
-                      : "border border-border text-muted hover:border-accent hover:text-accent"
+                      ? "bg-accent text-accent-foreground shadow-sm"
+                      : "border border-border bg-card text-muted-foreground hover:border-accent/60 hover:bg-muted hover:text-accent"
                   )}
                 >
                   {star}
@@ -157,7 +159,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
           </div>
 
           <div>
-            <label htmlFor="log-comment" className="block text-sm font-medium text-secondary mb-2">
+            <label htmlFor="log-comment" className="block text-sm font-medium text-foreground mb-2">
               Comment (optional)
             </label>
             <textarea
@@ -166,15 +168,16 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
               value={form.comment}
               onChange={(e) => setForm((p) => ({ ...p, comment: e.target.value }))}
               placeholder="How was your experience?"
-              className="w-full px-4 py-3 rounded-xl border border-border bg-primary text-secondary outline-none focus:border-accent transition-colors resize-none"
+              className="field-control resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl border border-danger text-danger hover:bg-danger/10 transition-colors cursor-pointer"
+              className="btn-secondary"
             >
               Cancel
             </button>
@@ -182,7 +185,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
               type="submit"
               disabled={!isValid}
               className={cn(
-                "px-4 py-2 rounded-xl bg-accent text-primary font-medium hover:bg-accent-hover transition-colors cursor-pointer",
+                "btn-primary",
                 !isValid && "opacity-50 cursor-not-allowed"
               )}
             >

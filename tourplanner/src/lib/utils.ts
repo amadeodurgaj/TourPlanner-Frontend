@@ -11,7 +11,7 @@ export function formatDistance(km: number): string {
 }
 
 export function formatTime(minutes: number): string {
-  if (isNaN(minutes) || minutes === null || minutes === undefined) return "—";
+  if (isNaN(minutes) || minutes === null || minutes === undefined) return "Not set";
   if (minutes < 60) return `${Math.round(minutes)} min`;
   const hours = Math.floor(minutes / 60);
   const mins = Math.round(minutes % 60);

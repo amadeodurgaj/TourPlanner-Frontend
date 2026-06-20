@@ -69,9 +69,7 @@ export function useAuthViewModel(): { state: AuthState; actions: AuthActions } {
             setState(prev => ({
                 ...prev,
                 loading: false,
-                error: errorMessage.includes('Invalid username or password')
-                    ? errorMessage
-                    : 'Invalid username or password. Please try again.',
+                error: errorMessage.includes('Invalid username or password') ? errorMessage : 'Invalid username or password. Please try again.',
             }));
             return false;
         }
