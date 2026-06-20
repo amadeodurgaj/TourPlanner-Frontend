@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AuthService from '@/services/AuthService';
+import { createContext, useCallback, useContext, useEffect, useMemo, ReactNode } from 'react';
+import { useAuthViewModel } from '@/viewmodels/useAuthViewModel';
 
 interface User {
     username: string;
@@ -9,7 +9,8 @@ interface AuthContextType {
     isAuthenticated: boolean;
     user: User | null;
     loading: boolean;
-    login: () => Promise<void>;
+    error: string | null;
+    login: (username?: string, password?: string) => Promise<boolean>;
     logout: () => void;
     checkAuth: () => Promise<void>;
 }
@@ -17,44 +18,33 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { state, actions } = useAuthViewModel();
 
-    const checkAuth = async () => {
-        try {
-            const response = await AuthService.getCurrentUser();
-            if (response && response.data) {
-                setIsAuthenticated(true);
-                setUser({ username: response.data.username });
-            } else {
-                setIsAuthenticated(false);
-                setUser(null);
-            }
-        } catch (error) {
-            setIsAuthenticated(false);
-            setUser(null);
-        } finally {
-            setLoading(false);
+    const login = useCallback(async (username?: string, password?: string) => {
+        if (username && password) {
+            return actions.login(username, password);
         }
-    };
 
-    const login = async () => {
-        setLoading(true);
-        await checkAuth();
-    };
-
-    const logout = () => {
-        setIsAuthenticated(false);
-        setUser(null);
-    };
+        await actions.checkAuth();
+        return true;
+    }, [actions]);
 
     useEffect(() => {
-        checkAuth();
-    }, []);
+        actions.checkAuth();
+    }, [actions.checkAuth]);
+
+    const value = useMemo(() => ({
+        isAuthenticated: state.isAuthenticated,
+        user: state.user,
+        loading: state.loading,
+        error: state.error,
+        login,
+        logout: actions.logout,
+        checkAuth: actions.checkAuth,
+    }), [actions.checkAuth, actions.logout, login, state.error, state.isAuthenticated, state.loading, state.user]);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, loading, login, logout, checkAuth }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );
