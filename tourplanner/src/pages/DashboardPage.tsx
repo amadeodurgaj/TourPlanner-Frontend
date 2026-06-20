@@ -1,40 +1,33 @@
 import { useState, useEffect } from "react";
-import { Plus, MapPin } from "lucide-react";
-import { Sidebar, MobileMenuButton } from "@/components/Sidebar";
-import { TourList } from "@/components/TourList";
-import { TourDetail } from "@/components/TourDetail";
-import { TourLogList } from "@/components/TourLogList";
+import { useNavigate } from "react-router-dom";
+import { Plus, Route, Star, Heart, Bike, CarFront, Footprints, Zap, ArrowRight, MapPin } from "lucide-react";
 import { TourService } from "@/services/TourService";
-import { TourLogService } from "@/services/TourLogService";
 import CreateTourDialog from "@/components/CreateTourDialog";
-import EditTourDialog from "@/components/EditTourDialog";
-import CreateTourLogDialog from "@/components/CreateTourLogDialog";
-import type { Tour, TourRequest, TourLog, TourLogRequest } from "@/types/api";
+import type { Tour, TourRequest } from "@/types/api";
+
+const TRANSPORT_LABELS: Record<string, string> = {
+  foot: "Walking",
+  bike: "Biking",
+  running: "Running",
+  car: "Driving",
+};
+
+const TRANSPORT_ICONS: Record<string, typeof Footprints> = {
+  foot: Footprints,
+  bike: Bike,
+  running: Zap,
+  car: CarFront,
+};
 
 export default function DashboardPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tours, setTours] = useState<Tour[]>([]);
-  const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
-  const [logs, setLogs] = useState<TourLog[]>([]);
-
-  const [isCreateTourOpen, setIsCreateTourOpen] = useState(false);
-  const [isEditTourOpen, setIsEditTourOpen] = useState(false);
-  const [isCreateLogOpen, setIsCreateLogOpen] = useState(false);
-  const [editingLog, setEditingLog] = useState<TourLog | null>(null);
-
   const [loading, setLoading] = useState(true);
+  const [isCreateTourOpen, setIsCreateTourOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadTours();
   }, []);
-
-  useEffect(() => {
-    if (selectedTour) {
-      loadLogs(selectedTour.id);
-    } else {
-      setLogs([]);
-    }
-  }, [selectedTour?.id]);
 
   const loadTours = async () => {
     try {
@@ -50,17 +43,6 @@ export default function DashboardPage() {
     }
   };
 
-  const loadLogs = async (tourId: string) => {
-    try {
-      const res = await TourLogService.getLogs(tourId);
-      if (res.success && res.data) {
-        setLogs(res.data);
-      }
-    } catch (error) {
-      console.error("Failed to load logs:", error);
-    }
-  };
-
   const handleCreateTour = async (data: TourRequest) => {
     try {
       await TourService.createTour(data);
@@ -71,178 +53,189 @@ export default function DashboardPage() {
     }
   };
 
-  const handleEditTour = async (data: TourRequest) => {
-    if (!selectedTour) return;
-    try {
-      const res = await TourService.updateTour(selectedTour.id, data);
-      setIsEditTourOpen(false);
-      loadTours();
-      if (res.success && res.data) {
-        setSelectedTour(res.data);
-      }
-    } catch (error) {
-      console.error("Failed to update tour:", error);
-    }
-  };
+  const totalTours = tours.length;
+  const totalDistance = tours.reduce((sum, tour) => sum + tour.distance, 0);
+  const avgPopularity = totalTours > 0
+    ? Math.round(tours.reduce((sum, tour) => sum + tour.popularityScore, 0) / totalTours)
+    : 0;
+  const avgChildFriendly = totalTours > 0
+    ? Math.round(tours.reduce((sum, tour) => sum + tour.childFriendliness, 0) / totalTours)
+    : 0;
 
-  const handleImageUpload = (imagePath: string) => {
-    setSelectedTour((prev) => (prev ? { ...prev, imagePath } : null));
-    loadTours();
-  };
+  const transportCounts = tours.reduce((acc, tour) => {
+    const key = tour.transportType || "other";
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
-  const handleDeleteTour = async () => {
-    if (!selectedTour) return;
-    if (!confirm("Delete this tour?")) return;
-    try {
-      await TourService.deleteTour(selectedTour.id);
-      setSelectedTour(null);
-      loadTours();
-    } catch (error) {
-      console.error("Failed to delete tour:", error);
-    }
-  };
+  const transportData = Object.entries(transportCounts)
+    .map(([type, count]) => ({
+      type,
+      label: TRANSPORT_LABELS[type] || type,
+      Icon: TRANSPORT_ICONS[type] || Footprints,
+      count,
+      pct: totalTours > 0 ? Math.round((count / totalTours) * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count);
 
-  const handleDeleteTourFromList = async (id: string) => {
-    try {
-      await TourService.deleteTour(id);
-      if (selectedTour?.id === id) {
-        setSelectedTour(null);
-      }
-      loadTours();
-    } catch (error) {
-      console.error("Failed to delete tour:", error);
-    }
-  };
+  const recentTours = [...tours]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
 
-  const handleCreateLog = async (data: TourLogRequest) => {
-    if (!selectedTour) return;
-    try {
-      await TourLogService.createLog(selectedTour.id, data);
-      setIsCreateLogOpen(false);
-      loadLogs(selectedTour.id);
-    } catch (error) {
-      console.error("Failed to create log:", error);
-    }
-  };
-
-  const handleEditLog = async (data: TourLogRequest) => {
-    if (!selectedTour || !editingLog) return;
-    try {
-      await TourLogService.updateLog(selectedTour.id, editingLog.id, data);
-      setEditingLog(null);
-      setIsCreateLogOpen(false);
-      loadLogs(selectedTour.id);
-    } catch (error) {
-      console.error("Failed to update log:", error);
-    }
-  };
-
-  const handleDeleteLog = async (id: string) => {
-    if (!selectedTour) return;
-    if (!confirm("Delete this log?")) return;
-    try {
-      await TourLogService.deleteLog(selectedTour.id, id);
-      loadLogs(selectedTour.id);
-    } catch (error) {
-      console.error("Failed to delete log:", error);
-    }
-  };
-
-  const handleEditLogFromList = (log: TourLog) => {
-    setEditingLog(log);
-    setIsCreateLogOpen(true);
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-[calc(100vh-80px)] items-center justify-center">
+        <p className="text-muted">Loading dashboard...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex min-h-[calc(100vh-80px)]">
-      <Sidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        onCreateTour={() => setIsCreateTourOpen(true)}
-        tours={tours}
-        selectedTourId={selectedTour?.id}
-        onSelectTour={setSelectedTour}
-        onDeleteTour={handleDeleteTourFromList}
-      />
-
-      <MobileMenuButton
-        isOpen={sidebarOpen}
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      />
-
-      <div className="flex-1 md:ml-80">
-        <div className="p-4 md:p-8">
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <p className="text-muted">Loading...</p>
-            </div>
-          ) : !selectedTour ? (
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-80px-4rem)] text-center">
-              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mb-4">
-                <MapPin className="w-8 h-8 text-muted-light" />
-              </div>
-              <p className="text-xl text-secondary mb-2">No tour selected</p>
-              <p className="text-sm text-muted mb-6">
-                Select a tour from the sidebar or create a new one.
-              </p>
-              <button
-                onClick={() => setIsCreateTourOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-accent text-primary font-medium hover:bg-accent-hover transition-colors cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                Create Tour
-              </button>
-            </div>
-          ) : (
-            <div className="max-w-3xl">
-              <TourDetail
-                tour={selectedTour}
-                logs={logs}
-                onEdit={() => setIsEditTourOpen(true)}
-                onDelete={handleDeleteTour}
-                onCreateLog={() => {
-                  setEditingLog(null);
-                  setIsCreateLogOpen(true);
-                }}
-                onEditLog={handleEditLogFromList}
-                onDeleteLog={handleDeleteLog}
-                onImageUpload={handleImageUpload}
-              />
-
-              <div className="mt-8">
-                <TourLogList
-                  logs={logs}
-                  onEdit={handleEditLogFromList}
-                  onDelete={handleDeleteLog}
-                />
-              </div>
-            </div>
-          )}
+    <div className="mx-auto max-w-5xl p-4 md:p-8">
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-bold tracking-tight text-secondary">Dashboard</h1>
+          <p className="mt-2 text-base text-muted">Overview of all your tours</p>
         </div>
+        <button
+          onClick={() => setIsCreateTourOpen(true)}
+          className="flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 font-medium text-primary transition-colors hover:bg-accent-hover"
+        >
+          <Plus className="h-4 w-4" />
+          Create Tour
+        </button>
       </div>
+
+      {totalTours === 0 ? (
+        <div className="flex flex-col items-center justify-center py-28 text-center">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-accent/10">
+            <Route className="h-10 w-10 text-accent" />
+          </div>
+          <h2 className="mb-3 text-2xl font-semibold text-secondary">No tours yet</h2>
+          <p className="mb-8 max-w-sm text-base text-muted">
+            Create your first tour to see statistics and insights here.
+          </p>
+          <button
+            onClick={() => setIsCreateTourOpen(true)}
+            className="flex items-center gap-2 rounded-xl bg-accent px-6 py-3.5 font-medium text-primary transition-colors hover:bg-accent-hover"
+          >
+            <Plus className="h-4 w-4" />
+            Create Your First Tour
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-8">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard icon={Route} label="Total Tours" value={totalTours.toString()} />
+            <StatCard
+              icon={MapPin}
+              label="Total Distance"
+              value={`${totalDistance < 10 ? totalDistance.toFixed(1) : Math.round(totalDistance)} km`}
+            />
+            <StatCard icon={Star} label="Avg Popularity" value={`${avgPopularity}%`} />
+            <StatCard icon={Heart} label="Avg Child-Friendly" value={`${avgChildFriendly}%`} />
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-2">
+            <section className="rounded-xl border border-border/50 bg-primary p-6">
+              <h2 className="mb-5 text-lg font-semibold uppercase tracking-wider text-secondary">
+                Transport Breakdown
+              </h2>
+              <div className="space-y-5">
+                {transportData.map(({ type, label, Icon, count, pct }) => (
+                  <div key={type}>
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-3 text-secondary">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10">
+                          <Icon className="h-4 w-4 text-accent" />
+                        </div>
+                        <span className="font-medium">{label}</span>
+                      </div>
+                      <span className="text-sm font-medium tabular-nums text-muted">
+                        {count} ({pct}%)
+                      </span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-secondary/10">
+                      <div className="h-full rounded-full bg-accent" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="rounded-xl border border-border/50 bg-primary p-6">
+              <h2 className="mb-5 text-lg font-semibold uppercase tracking-wider text-secondary">
+                Recent Tours
+              </h2>
+              <div className="space-y-4">
+                {recentTours.map((tour) => {
+                  const Icon = TRANSPORT_ICONS[tour.transportType] || Footprints;
+                  return (
+                    <button
+                      key={tour.id}
+                      onClick={() => navigate("/tours")}
+                      className="flex w-full items-center justify-between rounded-xl border border-border/50 p-4 text-left transition-colors hover:border-accent/50 hover:bg-accent/5"
+                    >
+                      <div className="flex min-w-0 items-center gap-4">
+                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-secondary/10">
+                          <Icon className="h-5 w-5 text-muted" />
+                        </div>
+                        <span className="truncate font-medium text-secondary">{tour.name}</span>
+                      </div>
+                      <div className="ml-4 flex flex-shrink-0 items-center gap-3 text-sm text-muted">
+                        <span className="flex items-center gap-1">
+                          <Star className="h-4 w-4" />
+                          {tour.popularityScore}%
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-4 w-4" />
+                          {tour.childFriendliness}%
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          <div className="flex justify-center">
+            <button
+              onClick={() => navigate("/tours")}
+              className="flex items-center gap-2 rounded-xl border border-border/50 px-6 py-3.5 text-secondary transition-colors hover:border-accent/50 hover:text-accent"
+            >
+              View All Tours
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <CreateTourDialog
         open={isCreateTourOpen}
         onClose={() => setIsCreateTourOpen(false)}
         onSubmit={handleCreateTour}
       />
-
-      <EditTourDialog
-        open={isEditTourOpen}
-        tour={selectedTour}
-        onClose={() => setIsEditTourOpen(false)}
-        onSubmit={handleEditTour}
-      />
-
-      <CreateTourLogDialog
-        open={isCreateLogOpen}
-        editLog={editingLog || undefined}
-        onClose={() => {
-          setIsCreateLogOpen(false);
-          setEditingLog(null);
-        }}
-        onSubmit={editingLog ? handleEditLog : handleCreateLog}
-      />
     </div>
+  );
+}
+
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof Route;
+  label: string;
+  value: string;
+}) {
+  return (
+    <section className="rounded-xl border border-border/50 bg-primary p-6">
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent/10">
+        <Icon className="h-6 w-6 text-accent" />
+      </div>
+      <p className="text-3xl font-bold tabular-nums text-secondary">{value}</p>
+      <p className="mt-2 text-sm font-medium uppercase tracking-wider text-muted">{label}</p>
+    </section>
   );
 }
