@@ -4,6 +4,7 @@ import { TourService } from "@/services/TourService";
 import { TourList } from "@/components/TourList";
 import { TourDetail } from "@/components/TourDetail";
 import { Sidebar, MobileMenuButton } from "@/components/Sidebar";
+import { useTourDetailViewModel } from "@/viewmodels/useTourDetailViewModel";
 import type { Tour } from "@/types/api";
 
 export default function ToursPage() {
@@ -11,6 +12,7 @@ export default function ToursPage() {
     const [selectedTour, setSelectedTour] = useState<Tour | null>(null);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const { state: detailState, actions: detailActions } = useTourDetailViewModel();
 
     useEffect(() => {
         loadTours();
@@ -88,6 +90,9 @@ export default function ToursPage() {
                                 onImageUpload={(path) => {
                                     setSelectedTour(prev => prev ? { ...prev, imagePath: path } : null);
                                 }}
+                                onDownloadReport={() => detailActions.downloadReport(selectedTour.id, selectedTour.name)}
+                                downloading={detailState.downloading}
+                                downloadError={detailState.error}
                             />
                         </div>
                     )}

@@ -1,4 +1,4 @@
-import { MapPin, Timer, ArrowRight, Pencil, Trash2, Plus, Image, Upload, X } from "lucide-react";
+import { MapPin, Timer, ArrowRight, Pencil, Trash2, Plus, Image, Upload, X, FileDown } from "lucide-react";
 import { useState, useRef } from "react";
 import { cn, formatDistance, formatTime } from "@/lib/utils";
 import { API_URL } from "@/api/ApiClient";
@@ -12,12 +12,27 @@ interface TourDetailProps {
   onDelete: () => void;
   onCreateLog: () => void;
   onImageUpload: (imagePath: string) => void;
+  onDownloadReport?: () => void;
+  downloading?: boolean;
+  downloadError?: string | null;
   logs?: TourLog[];
   onEditLog?: (log: TourLog) => void;
   onDeleteLog?: (id: string) => void;
 }
 
-export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload, logs, onEditLog, onDeleteLog }: TourDetailProps) {
+export function TourDetail({
+  tour,
+  onEdit,
+  onDelete,
+  onCreateLog,
+  onImageUpload,
+  onDownloadReport,
+  downloading,
+  downloadError,
+  logs,
+  onEditLog,
+  onDeleteLog
+}: TourDetailProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,12 +58,28 @@ export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload,
 
   return (
     <div className="flex flex-col gap-6">
+      {downloadError && (
+        <div className="rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+          {downloadError}
+        </div>
+      )}
+
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-2xl font-bold text-secondary">{tour.name}</h2>
           <p className="text-sm text-muted mt-1">{tour.description}</p>
         </div>
         <div className="flex items-center gap-2">
+          {onDownloadReport && (
+            <button
+              onClick={onDownloadReport}
+              disabled={downloading}
+              className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Download PDF report"
+            >
+              <FileDown className={`w-4 h-4 ${downloading ? "animate-pulse" : ""}`} />
+            </button>
+          )}
           <button
             onClick={onEdit}
             className="p-2 rounded-lg text-muted hover:text-accent hover:bg-accent/10 transition-colors cursor-pointer"
