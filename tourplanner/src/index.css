@@ -299,19 +299,19 @@
   }
 
   .button-primary, .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all duration-200 ease-out hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50 shadow-sm hover:shadow-md active:scale-[0.97];
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-all duration-200 ease-out hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50 shadow-sm hover:shadow-md active:scale-[0.97] cursor-pointer;
   }
 
   .button-secondary, .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-all duration-200 ease-out hover:border-accent/50 hover:bg-secondary hover:shadow-sm active:scale-[0.97];
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-card px-5 py-3 text-sm font-medium text-foreground transition-all duration-200 ease-out hover:border-accent/50 hover:bg-secondary hover:shadow-sm active:scale-[0.97] cursor-pointer;
   }
 
   .button-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium text-muted-foreground transition-all duration-200 ease-out hover:bg-secondary hover:text-foreground;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium text-muted-foreground transition-all duration-200 ease-out hover:bg-secondary hover:text-foreground cursor-pointer;
   }
 
   .icon-button {
-    @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-all duration-200 ease-out hover:bg-secondary/80 hover:text-foreground shadow-sm hover:shadow-md active:scale-[0.97];
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground transition-all duration-200 ease-out hover:bg-secondary/80 hover:text-foreground shadow-sm hover:shadow-md active:scale-[0.97] cursor-pointer;
   }
 
   .spinner {
