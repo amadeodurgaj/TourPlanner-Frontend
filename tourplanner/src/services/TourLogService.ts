@@ -1,10 +1,10 @@
 import { api, ApiError } from "@/api/ApiClient";
-import { TourLogRequest } from "@/types/api";
+import type { TourLogRequest, ApiResponse, TourLog } from "@/types/api";
 
 export const TourLogService = {
-    getLogs: async (tourId: string): Promise<any> => {
+    getLogs: async (tourId: string): Promise<ApiResponse<TourLog[]>> => {
         try {
-            return await api.get(`/api/tours/${tourId}/logs`);
+            return await api.get<ApiResponse<TourLog[]>>(`/api/tours/${tourId}/logs`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -13,9 +13,9 @@ export const TourLogService = {
         }
     },
 
-    getLog: async (tourId: string, logId: string): Promise<any> => {
+    getLog: async (tourId: string, logId: string): Promise<ApiResponse<TourLog>> => {
         try {
-            return await api.get(`/api/tours/${tourId}/logs/${logId}`);
+            return await api.get<ApiResponse<TourLog>>(`/api/tours/${tourId}/logs/${logId}`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -24,9 +24,9 @@ export const TourLogService = {
         }
     },
 
-    createLog: async (tourId: string, log: TourLogRequest): Promise<any> => {
+    createLog: async (tourId: string, log: TourLogRequest): Promise<ApiResponse<TourLog>> => {
         try {
-            return await api.post(`/api/tours/${tourId}/logs`, log);
+            return await api.post<ApiResponse<TourLog>>(`/api/tours/${tourId}/logs`, log);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -35,9 +35,9 @@ export const TourLogService = {
         }
     },
 
-    updateLog: async (tourId: string, logId: string, log: TourLogRequest): Promise<any> => {
+    updateLog: async (tourId: string, logId: string, log: TourLogRequest): Promise<ApiResponse<TourLog>> => {
         try {
-            return await api.put(`/api/tours/${tourId}/logs/${logId}`, log);
+            return await api.put<ApiResponse<TourLog>>(`/api/tours/${tourId}/logs/${logId}`, log);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -46,9 +46,9 @@ export const TourLogService = {
         }
     },
 
-    deleteLog: async (tourId: string, logId: string): Promise<any> => {
+    deleteLog: async (tourId: string, logId: string): Promise<ApiResponse<null>> => {
         try {
-            return await api.delete(`/api/tours/${tourId}/logs/${logId}`);
+            return await api.delete<ApiResponse<null>>(`/api/tours/${tourId}/logs/${logId}`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;

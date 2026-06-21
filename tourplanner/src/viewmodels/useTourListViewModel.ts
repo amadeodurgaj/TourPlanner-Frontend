@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { TourService } from '@/services/TourService';
 import type { Tour } from '@/types/api';
 
@@ -32,8 +33,8 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
         try {
             setState(prev => ({ ...prev, loading: true, error: null }));
             const res = await TourService.getTours();
-            if (res.success && res.data) {
-                setState(prev => ({ ...prev, tours: res.data, loading: false }));
+            if (res.success) {
+                setState(prev => ({ ...prev, tours: res.data ?? [], loading: false }));
             } else {
                 setState(prev => ({ ...prev, tours: [], loading: false }));
             }
@@ -54,6 +55,7 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
 
         try {
             await TourService.deleteTour(id);
+            toast.success('Tour deleted');
             setState(prev => ({
                 ...prev,
                 tours: prev.tours.filter(t => t.id !== id),
@@ -62,7 +64,7 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
             }));
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete tour';
-            window.alert(errorMessage || 'Failed to delete tour. Please try again.');
+            toast.error(errorMessage || 'Failed to delete tour');
             setState(prev => ({ ...prev, error: errorMessage || 'Failed to delete tour. Please try again.' }));
         }
     }, []);
@@ -76,8 +78,8 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
         try {
             setState(prev => ({ ...prev, loading: true }));
             const res = await TourService.searchTours(query);
-            if (res.success && res.data) {
-                setState(prev => ({ ...prev, tours: res.data, loading: false }));
+            if (res.success) {
+                setState(prev => ({ ...prev, tours: res.data ?? [], loading: false }));
             }
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Search failed';

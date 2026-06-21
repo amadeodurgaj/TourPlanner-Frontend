@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/playfair-display/wght.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "@radix-ui/themes/styles.css";

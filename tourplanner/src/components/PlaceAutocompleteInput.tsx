@@ -176,7 +176,7 @@ export default function PlaceAutocompleteInput({
         >
           {suggestions.map((suggestion, index) => (
             <button
-              key={`${suggestion.latitude}-${suggestion.longitude}`}
+              key={`${suggestion.latitude}-${suggestion.longitude}-${index}`}
               type="button"
               onClick={() => handleSelect(suggestion)}
               className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-smooth ${

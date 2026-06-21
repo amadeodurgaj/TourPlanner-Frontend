@@ -1,10 +1,14 @@
+import { memo, Suspense, lazy } from "react";
 import { MapPin, Timer, ArrowRight, Pencil, Trash2, Plus, Image, Upload, Star, FileDown } from "lucide-react";
 import { useState, useRef } from "react";
+import { motion } from "framer-motion";
 import { cn, formatDistance, formatTime } from "@/lib/utils";
 import { API_URL } from "@/api/ApiClient";
+import { ImageWithPlaceholder } from "@/components/ImageWithPlaceholder";
 import type { Tour, TourLog } from "@/types/api";
 import { ImageService } from "@/services/ImageService";
-import LeafletMap from "./LeafletMap";
+
+const LeafletMap = lazy(() => import("./LeafletMap"));
 
 interface TourDetailProps {
   tour: Tour;
@@ -20,7 +24,7 @@ interface TourDetailProps {
   onDeleteLog?: (id: string) => void;
 }
 
-export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload, onDownloadReport, downloading, downloadError, logs, onEditLog, onDeleteLog }: TourDetailProps) {
+const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload, onDownloadReport, downloading, downloadError, logs, onEditLog, onDeleteLog }: TourDetailProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -197,12 +201,12 @@ export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload,
         </div>
         {tour.imagePath ? (
           <div className="relative aspect-video overflow-hidden rounded-xl bg-muted/80 ring-1 ring-border/70 shadow-medium">
-            <img
+            <ImageWithPlaceholder
               src={`${API_URL}${tour.imagePath}`}
               alt={tour.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
           </div>
         ) : (
           <div className="flex aspect-video items-center justify-center rounded-xl border-2 border-dashed border-border/80 bg-secondary/80">
@@ -224,13 +228,15 @@ export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload,
         </div>
         {tour.fromLatitude && tour.fromLongitude && tour.toLatitude && tour.toLongitude ? (
           <div className="rounded-xl overflow-hidden shadow-medium">
-            <LeafletMap
-              fromLat={tour.fromLatitude}
-              fromLng={tour.fromLongitude}
-              toLat={tour.toLatitude}
-              toLng={tour.toLongitude}
-              height="350px"
-            />
+            <Suspense fallback={<div className="flex items-center justify-center h-[350px] bg-muted/50 rounded-xl"><div className="spinner-sm" /></div>}>
+              <LeafletMap
+                fromLat={tour.fromLatitude}
+                fromLng={tour.fromLongitude}
+                toLat={tour.toLatitude}
+                toLng={tour.toLongitude}
+                height="350px"
+              />
+            </Suspense>
           </div>
         ) : (
           <div className="flex aspect-video items-center justify-center rounded-xl border-2 border-dashed border-border/80 bg-secondary/80">
@@ -334,6 +340,7 @@ export function TourDetail({ tour, onEdit, onDelete, onCreateLog, onImageUpload,
       </div>
     </div>
   );
-}
+});
 
+export { TourDetail };
 export default TourDetail;

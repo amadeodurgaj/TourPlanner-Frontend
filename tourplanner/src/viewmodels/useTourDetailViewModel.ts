@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { TourService } from '@/services/TourService';
 import { ImageService } from '@/services/ImageService';
 import type { Tour, TourRequest } from '@/types/api';
@@ -61,6 +62,7 @@ export function useTourDetailViewModel(): { state: TourDetailState; actions: Tou
         try {
             const response = await ImageService.uploadTourImage(tourId, file);
             if (response.success && response.data) {
+                toast.success('Image uploaded successfully');
                 setState(prev => ({ ...prev, uploading: false }));
                 return response.data;
             }
@@ -69,6 +71,7 @@ export function useTourDetailViewModel(): { state: TourDetailState; actions: Tou
             return null;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+            toast.error(errorMessage || 'Image upload failed. Please check file size and format.');
             setState(prev => ({ ...prev, uploading: false, error: errorMessage || 'Image upload failed. Please check the file size and format.' }));
             return null;
         }
@@ -78,8 +81,10 @@ export function useTourDetailViewModel(): { state: TourDetailState; actions: Tou
         setState(prev => ({ ...prev, downloading: true, error: null }));
         try {
             await TourService.downloadReport(tourId, tourName);
+            toast.success('Report downloaded');
             setState(prev => ({ ...prev, downloading: false }));
         } catch {
+            toast.error('Failed to download report');
             setState(prev => ({ ...prev, downloading: false, error: 'Failed to download PDF report' }));
             setTimeout(() => {
                 setState(prev => ({ ...prev, error: null }));

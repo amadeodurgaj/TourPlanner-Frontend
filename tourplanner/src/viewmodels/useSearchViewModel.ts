@@ -35,9 +35,9 @@ export function useSearchViewModel(onResults?: (tours: Tour[]) => void): { state
         try {
             setState(prev => ({ ...prev, isSearching: true, error: null }));
             const res = await TourService.searchTours(query);
-            if (res.success && res.data) {
-                setState(prev => ({ ...prev, results: res.data, isSearching: false }));
-                onResults?.(res.data);
+            if (res.success) {
+                setState(prev => ({ ...prev, results: res.data ?? [], isSearching: false }));
+                onResults?.(res.data ?? []);
             } else {
                 setState(prev => ({ ...prev, results: [], isSearching: false }));
                 onResults?.([]);

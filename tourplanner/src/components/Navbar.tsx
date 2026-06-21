@@ -85,7 +85,10 @@ export const Navbar = ({
         <div className="hidden md:flex items-center gap-3">
           <button
             className="icon-button hover:scale-110"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            onClick={() => {
+              localStorage.setItem('theme-manual', 'true');
+              setTheme(theme === "light" ? "dark" : "light");
+            }}
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
           >
             {theme === "light" ? <MoonIcon size={18} /> : <SunIcon size={18} />}
@@ -134,6 +137,7 @@ export const Navbar = ({
             <button
               className="flex w-full items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
               onClick={() => {
+                localStorage.setItem('theme-manual', 'true');
                 setTheme(theme === "light" ? "dark" : "light");
                 setIsMenuOpen(false);
               }}

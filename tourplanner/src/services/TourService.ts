@@ -1,10 +1,10 @@
 import { api, API_URL, ApiError } from "@/api/ApiClient";
-import { TourRequest } from "@/types/api";
+import type { TourRequest, ApiResponse, Tour } from "@/types/api";
 
 export const TourService = {
-    getTours: async (): Promise<any> => {
+    getTours: async (): Promise<ApiResponse<Tour[]>> => {
         try {
-            return await api.get("/api/tours");
+            return await api.get<ApiResponse<Tour[]>>("/api/tours");
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -13,9 +13,9 @@ export const TourService = {
         }
     },
 
-    getTour: async (id: string): Promise<any> => {
+    getTour: async (id: string): Promise<ApiResponse<Tour>> => {
         try {
-            return await api.get(`/api/tours/${id}`);
+            return await api.get<ApiResponse<Tour>>(`/api/tours/${id}`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -24,9 +24,9 @@ export const TourService = {
         }
     },
 
-    createTour: async (tour: TourRequest): Promise<any> => {
+    createTour: async (tour: TourRequest): Promise<ApiResponse<Tour>> => {
         try {
-            return await api.post("/api/tours", tour);
+            return await api.post<ApiResponse<Tour>>("/api/tours", tour);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -35,9 +35,9 @@ export const TourService = {
         }
     },
 
-    updateTour: async (id: string, tour: TourRequest): Promise<any> => {
+    updateTour: async (id: string, tour: TourRequest): Promise<ApiResponse<Tour>> => {
         try {
-            return await api.put(`/api/tours/${id}`, tour);
+            return await api.put<ApiResponse<Tour>>(`/api/tours/${id}`, tour);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -46,9 +46,9 @@ export const TourService = {
         }
     },
 
-    deleteTour: async (id: string): Promise<any> => {
+    deleteTour: async (id: string): Promise<ApiResponse<null>> => {
         try {
-            return await api.delete(`/api/tours/${id}`);
+            return await api.delete<ApiResponse<null>>(`/api/tours/${id}`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -57,9 +57,9 @@ export const TourService = {
         }
     },
 
-    searchTours: async (query: string): Promise<any> => {
+    searchTours: async (query: string): Promise<ApiResponse<Tour[]>> => {
         try {
-            return await api.get(`/api/tours/search?q=${encodeURIComponent(query)}`);
+            return await api.get<ApiResponse<Tour[]>>(`/api/tours/search?q=${encodeURIComponent(query)}`);
         } catch (error) {
             if (error instanceof ApiError) {
                 throw error;
@@ -82,7 +82,7 @@ export const TourService = {
         window.URL.revokeObjectURL(url);
     },
 
-    importTours: async (file: File): Promise<any> => {
+    importTours: async (file: File): Promise<ApiResponse<number>> => {
         const text = await file.text();
         const response = await fetch(`${API_URL}/api/tours/import`, {
             method: 'POST',

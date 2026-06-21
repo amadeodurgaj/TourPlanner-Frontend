@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { TourLogService } from '@/services/TourLogService';
 import type { TourLog, TourLogRequest } from '@/types/api';
 
@@ -33,8 +34,8 @@ export function useTourLogViewModel(): { state: TourLogState; actions: TourLogAc
         try {
             setState(prev => ({ ...prev, loading: true, error: null }));
             const res = await TourLogService.getLogs(tourId);
-            if (res.success && res.data) {
-                setState(prev => ({ ...prev, logs: res.data, loading: false }));
+            if (res.success) {
+                setState(prev => ({ ...prev, logs: res.data ?? [], loading: false }));
             } else {
                 setState(prev => ({ ...prev, logs: [], loading: false }));
             }
@@ -82,6 +83,7 @@ export function useTourLogViewModel(): { state: TourLogState; actions: TourLogAc
         try {
             const res = await TourLogService.deleteLog(tourId, logId);
             if (res.success) {
+                toast.success('Log deleted');
                 setState(prev => ({
                     ...prev,
                     logs: prev.logs.filter(l => l.id !== logId),
@@ -94,6 +96,7 @@ export function useTourLogViewModel(): { state: TourLogState; actions: TourLogAc
             return false;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Failed to delete log';
+            toast.error(errorMessage || 'Failed to delete log');
             setState(prev => ({ ...prev, error: errorMessage || 'Failed to delete tour log. Please try again.' }));
             return false;
         }

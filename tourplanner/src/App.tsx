@@ -2,8 +2,11 @@ import './App.css';
 import { useEffect, useState } from "react";
 import  {Navbar}  from "./components/Navbar";
 import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { GuestRoute } from './components/GuestRoute';
+import { useScrollToTop } from './hooks/useScrollToTop';
 import ToursPage from './pages/ToursPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
@@ -17,16 +20,23 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 
 export default function App() {
 
+    useScrollToTop();
+
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-        return savedTheme ?? 'light';
+        if (savedTheme) return savedTheme;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     });
 
     useEffect(() => {
-        const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-        if (savedTheme) {
-            setTheme(savedTheme);
-        }
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+        const handler = (e: MediaQueryListEvent) => {
+            if (!localStorage.getItem('theme-manual')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        };
+        prefersDark.addEventListener('change', handler);
+        return () => prefersDark.removeEventListener('change', handler);
     }, []);
 
     useEffect(() => {
@@ -37,7 +47,12 @@ export default function App() {
 
     return (
         <div className={`${theme} min-h-screen bg-background text-foreground`}>
+            <Toaster
+                position="top-right"
+                richColors
+            />
             <Navbar theme={theme} setTheme={setTheme} />
+            <ErrorBoundary>
             <Routes>
                 <Route path="/login" element={
                     <GuestRoute><LoginForm /></GuestRoute>
@@ -65,6 +80,7 @@ export default function App() {
                 } />
                 <Route path="/*" element={<Home />} />
             </Routes>
+            </ErrorBoundary>
         </div>
     );
 }

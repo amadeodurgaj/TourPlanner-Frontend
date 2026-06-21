@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { Menu, X, Plus, Search, Download, Upload, RefreshCw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "../lib/utils";
@@ -50,8 +51,9 @@ export function Sidebar({
   const handleExport = async () => {
     try {
       await TourService.exportTours();
+      toast.success('Tours exported successfully');
     } catch {
-      console.error("Export failed");
+      toast.error('Export failed');
     }
   };
 
@@ -65,9 +67,10 @@ export function Sidebar({
     setImporting(true);
     try {
       await TourService.importTours(file);
+      toast.success('Tours imported successfully');
       onRefresh?.();
     } catch {
-      console.error("Import failed");
+      toast.error('Import failed. Please check the file format.');
     } finally {
       setImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = "";

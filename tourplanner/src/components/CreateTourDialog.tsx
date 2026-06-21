@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import type { LocationSearchResult, TourRequest } from "@/types/api";
 
 type CreateTourDialogProps = {
@@ -49,6 +51,8 @@ export default function CreateTourDialog({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [open, onClose]);
 
+  const focusTrapRef = useFocusTrap(open);
+
   if (!open) return null;
 
   const isValid =
@@ -81,14 +85,23 @@ export default function CreateTourDialog({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm animate-fade-in"
-      onClick={onClose}
-    >
-      <div
-        className="max-h-[calc(100vh-3rem)] w-full max-w-2xl overflow-y-auto rounded-lg border border-border/70 bg-card p-6 shadow-2xl shadow-black/20 animate-scale-in"
-        onClick={(e) => e.stopPropagation()}
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-6 backdrop-blur-sm"
+        onClick={onClose}
       >
+        <motion.div
+          ref={focusTrapRef}
+          initial={{ opacity: 0, scale: 0.96, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.98, y: 10 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="max-h-[calc(100vh-3rem)] w-full max-w-2xl overflow-y-auto rounded-2xl border border-border/70 bg-card p-6 shadow-2xl shadow-black/20"
+          onClick={(e) => e.stopPropagation()}
+        >
         {/* Header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
@@ -200,7 +213,8 @@ export default function CreateTourDialog({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+    </AnimatePresence>
   );
 }

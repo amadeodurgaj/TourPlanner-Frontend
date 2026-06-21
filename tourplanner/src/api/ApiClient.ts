@@ -1,3 +1,7 @@
+import { toast } from 'sonner';
+import { parseErrorBody } from "./ErrorMapper";
+import type { ParsedError } from "./ErrorMapper";
+
 const API_URL = import.meta.env.VITE_REACT_APP_API_URL;
 const REQUEST_TIMEOUT = 15000;
 
@@ -25,24 +29,9 @@ export class ApiError extends Error {
     }
 }
 
-async function parseErrorBody(response: Response): Promise<{ message: string; details?: string[]; fieldErrors?: Record<string, string>; errorCode?: number }> {
-    try {
-        const body = await response.json();
-        if (body?.message) {
-            return {
-                message: body.message,
-                details: body.details,
-                fieldErrors: body.fieldErrors,
-                errorCode: body.errorCode
-            };
-        }
-        if (body?.error) {
-            return { message: body.error };
-        }
-        return { message: JSON.stringify(body) };
-    } catch {
-        return { message: response.statusText };
-    }
+function getCsrfToken(): string | null {
+    const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
+    return match ? decodeURIComponent(match[2]) : null;
 }
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -50,6 +39,12 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
     const { headers: extraHeaders, ...restOptions } = options;
+    const method = (options.method || "GET").toUpperCase();
+
+    const csrfToken = getCsrfToken();
+    const csrfHeader: Record<string, string> = (method !== "GET" && csrfToken)
+        ? { "X-XSRF-TOKEN": csrfToken }
+        : {};
 
     try {
         const response = await fetch(`${API_URL}${endpoint}`, {
@@ -58,11 +53,15 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
             ...restOptions,
             headers: {
                 "Content-Type": "application/json",
+                ...csrfHeader,
                 ...(extraHeaders as Record<string, string>),
             },
         });
 
         if (!response.ok) {
+            if (response.status === 401) {
+                toast.error('Session expired. Please log in again.');
+            }
             const errorBody = await parseErrorBody(response);
             throw new ApiError(
                 errorBody.message,
@@ -78,8 +77,14 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
 
         return response.json();
     } catch (error) {
-        if (error instanceof ApiError) throw error;
+        if (error instanceof ApiError) {
+            if (error.status !== 401 && error.status !== 403) {
+                toast.error(error.message || 'Something went wrong');
+            }
+            throw error;
+        }
         if (error instanceof DOMException && error.name === "AbortError") {
+            toast.error('Request timed out. Please try again.');
             throw new ApiError("Request timed out", 408);
         }
         throw new ApiError(

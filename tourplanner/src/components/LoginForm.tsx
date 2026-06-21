@@ -1,24 +1,24 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login, error: authError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
 
     const success = await login(username, password);
     if (success) {
+      toast.success(`Welcome back, ${username}!`);
       navigate("/dashboard");
     } else {
-      setError(authError || "Invalid username or password");
+      toast.error(authError || "Invalid username or password. Please try again.");
     }
   };
 
@@ -86,12 +86,6 @@ export default function LoginForm() {
                 Forgot password?
               </Link>
             </div>
-
-            {error && (
-              <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
-                {error}
-              </div>
-            )}
 
             <button
               type="submit"

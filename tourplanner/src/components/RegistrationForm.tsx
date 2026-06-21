@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import UserService from "@/services/UserService";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -26,11 +27,13 @@ export default function RegistrationForm() {
 
       const success = await login(username, password);
       if (success) {
+        toast.success('Account created successfully!');
         navigate("/dashboard");
       } else {
         setError("Could not register");
       }
     } catch (err) {
+      toast.error('Registration failed. Please check your information.');
       setError("Could not register");
     }
   };

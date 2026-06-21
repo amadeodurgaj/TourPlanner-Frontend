@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'sonner';
+import { motion } from "framer-motion";
 import { Plus, Route, Star, Heart, Bike, CarFront, Footprints, Zap, ArrowRight, MapPin } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { TourService } from "@/services/TourService";
 import CreateTourDialog from "@/components/CreateTourDialog";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { staggerContainer, fadeUpItem } from "@/components/motion/AnimatePresence";
 import type { Tour, TourRequest } from "@/types/api";
 
 const TRANSPORT_LABELS: Record<string, string> = {
@@ -24,6 +30,13 @@ const TRANSPORT_COLORS: Record<string, string> = {
   bike: "var(--color-success)",
   running: "var(--color-warning)",
   car: "var(--color-muted-foreground)",
+};
+
+const CHART_COLORS: Record<string, string> = {
+  foot: '#3b82f6',
+  bike: '#22c55e',
+  running: '#f59e0b',
+  car: '#6b7280'
 };
 
 export default function DashboardPage() {
@@ -53,6 +66,7 @@ export default function DashboardPage() {
   const handleCreateTour = async (data: TourRequest) => {
     try {
       await TourService.createTour(data);
+      toast.success('Tour created successfully');
       setIsCreateTourOpen(false);
       loadTours();
     } catch (error) {
@@ -102,23 +116,28 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-4 md:p-8">
-      <div className="flex items-center justify-between mb-10">
+    <motion.div
+      className="mx-auto max-w-5xl p-4 md:p-8"
+      variants={staggerContainer}
+      initial="initial"
+      animate="animate"
+    >
+      <motion.div variants={fadeUpItem} className="flex items-center justify-between mb-10">
         <div>
           <h1 className="text-4xl font-bold tracking-tight text-foreground">Dashboard</h1>
           <p className="mt-2 text-base text-muted-foreground/80">Overview of all your tours</p>
         </div>
-        <button
+        <Button
           onClick={() => setIsCreateTourOpen(true)}
-          className="btn-primary px-5 py-3 shadow-sm hover:shadow-md"
+          leftIcon={<Plus className="w-4 h-4" />}
+          size="lg"
         >
-          <Plus className="w-4 h-4" />
           Create Tour
-        </button>
-      </div>
+        </Button>
+      </motion.div>
 
       {totalTours === 0 ? (
-        <div className="flex flex-col items-center justify-center py-28 text-center">
+        <motion.div variants={fadeUpItem} className="flex flex-col items-center justify-center py-28 text-center">
           <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
             <Route className="w-10 h-10 text-accent/80" />
           </div>
@@ -126,19 +145,19 @@ export default function DashboardPage() {
           <p className="text-base text-muted-foreground/80 mb-8 max-w-sm">
             Create your first tour to see statistics and insights here.
           </p>
-          <button
+          <Button
             onClick={() => setIsCreateTourOpen(true)}
-            className="btn-primary px-6 py-3.5 shadow-lg hover:shadow-xl hover:scale-105"
+            leftIcon={<Plus className="w-4 h-4" />}
+            size="lg"
           >
-            <Plus className="w-4 h-4" />
             Create Your First Tour
-          </button>
-        </div>
+          </Button>
+        </motion.div>
       ) : (
-        <div className="flex flex-col gap-8">
+        <motion.div variants={fadeUpItem} className="flex flex-col gap-8">
+          {/* Stats Cards */}
           <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
-            {/* Total Tours Card */}
-            <div className="panel-soft p-6 hover-lift transition-smooth">
+            <Card variant="elevated" padding="md" className="hover-lift transition-smooth">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
                   <Route className="w-6 h-6 text-accent" />
@@ -146,10 +165,8 @@ export default function DashboardPage() {
               </div>
               <p className="text-4xl font-bold text-foreground tabular-nums">{totalTours}</p>
               <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Total Tours</p>
-            </div>
-
-            {/* Total Distance Card */}
-            <div className="panel-soft p-6 hover-lift transition-smooth">
+            </Card>
+            <Card variant="elevated" padding="md" className="hover-lift transition-smooth">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-success/15 to-success/5 ring-1 ring-success/20">
                   <MapPin className="w-6 h-6 text-success" />
@@ -160,10 +177,8 @@ export default function DashboardPage() {
                 <span className="text-xl text-muted-foreground/80 ml-1">km</span>
               </p>
               <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Total Distance</p>
-            </div>
-
-            {/* Avg Popularity Card */}
-            <div className="panel-soft p-6 hover-lift transition-smooth">
+            </Card>
+            <Card variant="elevated" padding="md" className="hover-lift transition-smooth">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-warning/15 to-warning/5 ring-1 ring-warning/20">
                   <Star className="w-6 h-6 text-warning" />
@@ -171,10 +186,8 @@ export default function DashboardPage() {
               </div>
               <p className="text-4xl font-bold text-foreground tabular-nums">{avgPopularity}<span className="text-xl text-muted-foreground/80 ml-1">%</span></p>
               <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Avg Popularity</p>
-            </div>
-
-            {/* Avg Child-Friendly Card */}
-            <div className="panel-soft p-6 hover-lift transition-smooth">
+            </Card>
+            <Card variant="elevated" padding="md" className="hover-lift transition-smooth">
               <div className="flex items-center gap-3 mb-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
                   <Heart className="w-6 h-6 text-accent" />
@@ -182,88 +195,119 @@ export default function DashboardPage() {
               </div>
               <p className="text-4xl font-bold text-foreground tabular-nums">{avgChildFriendly}<span className="text-xl text-muted-foreground/80 ml-1">%</span></p>
               <p className="text-sm text-muted-foreground/80 uppercase tracking-wider mt-2 font-medium">Avg Child-Friendly</p>
-            </div>
+            </Card>
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            {/* Transport Breakdown - Enhanced */}
-            <div className="panel-soft p-6">
-              <h2 className="text-lg font-semibold text-foreground uppercase tracking-wider mb-5">Transport Breakdown</h2>
-              <div className="space-y-5">
-                {transportData.map(({ type, label, Icon, color, count, pct }) => (
-                  <div key={type} className="group">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3 text-foreground">
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg" style={{ backgroundColor: color + "15" }}>
-                          <Icon className="w-4 h-4" style={{ color }} />
-                        </div>
-                        <span className="font-medium">{label}</span>
-                      </div>
-                      <span className="text-sm text-muted-foreground/80 tabular-nums font-medium">
-                        {count} ({pct}%)
-                      </span>
-                    </div>
-                    <div className="h-3 rounded-full bg-muted/80 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all duration-500 group-hover:shadow-soft"
-                        style={{ width: `${pct}%`, backgroundColor: color }}
+            {/* Transport Breakdown Chart */}
+            <Card variant="elevated" padding="lg">
+              <CardHeader>
+                <CardTitle>Transport Breakdown</CardTitle>
+                <CardDescription>Distribution of your tour types</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={transportData} layout="vertical">
+                      <XAxis type="number" hide />
+                      <YAxis
+                        dataKey="label"
+                        type="category"
+                        width={80}
+                        tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                        axisLine={false}
+                        tickLine={false}
                       />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Recent Tours - Enhanced */}
-            <div className="panel-soft p-6">
-              <h2 className="text-lg font-semibold text-foreground uppercase tracking-wider mb-5">Recent Tours</h2>
-              {recentTours.length === 0 ? (
-                <p className="text-base text-muted-foreground/80 text-center py-6">No tours created yet.</p>
-              ) : (
-                <div className="space-y-4">
-                  {recentTours.map((tour) => {
-                    const Icon = TRANSPORT_ICONS[tour.transportType] || Footprints;
-                    return (
-                      <div
-                        key={tour.id}
-                        className="flex items-center justify-between rounded-xl border border-border/60 p-4 transition-smooth hover:border-border hover:bg-accent/5 cursor-pointer group"
-                        onClick={() => navigate("/tours")}
-                      >
-                        <div className="flex items-center gap-4 min-w-0">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/80 flex-shrink-0">
-                            <Icon className="w-5 h-5 text-muted-foreground/80 group-hover:text-accent transition-colors" />
-                          </div>
-                          <span className="text-base text-foreground font-medium truncate">{tour.name}</span>
-                        </div>
-                        <div className="flex items-center gap-4 flex-shrink-0 ml-4">
-                          <span className="badge badge-accent">
-                            <Star className="w-4 h-4" />
-                            {tour.popularityScore}%
-                          </span>
-                          <span className="badge badge-success">
-                            <Heart className="w-4 h-4" />
-                            {tour.childFriendliness}%
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      <RechartsTooltip
+                        cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }}
+                        contentStyle={{
+                          background: 'hsl(var(--card))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}
+                      />
+                      <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={24}>
+                        {transportData.map((entry) => (
+                          <Cell key={entry.type} fill={CHART_COLORS[entry.type] || '#6b7280'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
-              )}
-            </div>
+
+                <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-border/50">
+                  {transportData.map(item => (
+                    <div key={item.type} className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 rounded-full"
+                        style={{ background: CHART_COLORS[item.type] || '#6b7280' }}
+                      />
+                      <span className="text-xs text-muted-foreground">{item.label}</span>
+                      <span className="text-xs font-semibold text-foreground">{item.count}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Tours */}
+            <Card variant="elevated" padding="lg">
+              <CardHeader>
+                <CardTitle>Recent Tours</CardTitle>
+                <CardDescription>Your latest adventures</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recentTours.length === 0 ? (
+                  <p className="text-base text-muted-foreground/80 text-center py-6">No tours created yet.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {recentTours.map((tour) => {
+                      const Icon = TRANSPORT_ICONS[tour.transportType] || Footprints;
+                      return (
+                        <div
+                          key={tour.id}
+                          className="flex items-center justify-between rounded-xl border border-border/60 p-4 transition-smooth hover:border-border hover:bg-accent/5 cursor-pointer group"
+                          onClick={() => navigate("/tours")}
+                        >
+                          <div className="flex items-center gap-4 min-w-0">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/80 flex-shrink-0">
+                              <Icon className="w-5 h-5 text-muted-foreground/80 group-hover:text-accent transition-colors" />
+                            </div>
+                            <span className="text-base text-foreground font-medium truncate">{tour.name}</span>
+                          </div>
+                          <div className="flex items-center gap-4 flex-shrink-0 ml-4">
+                            <span className="badge badge-accent">
+                              <Star className="w-4 h-4" />
+                              {tour.popularityScore}%
+                            </span>
+                            <span className="badge badge-success">
+                              <Heart className="w-4 h-4" />
+                              {tour.childFriendliness}%
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
-          {/* View All Tours Button - Enhanced */}
+          {/* View All Tours */}
           <div className="flex justify-center mt-8">
-            <button
+            <Button
+              variant="outline"
               onClick={() => navigate("/tours")}
-              className="btn-secondary px-6 py-3.5 border-border/80 hover:border-accent/40"
+              rightIcon={<ArrowRight className="w-4 h-4" />}
+              size="lg"
             >
               View All Tours
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
-        </div>
+        </motion.div>
       )}
 
       <CreateTourDialog
@@ -271,6 +315,6 @@ export default function DashboardPage() {
         onClose={() => setIsCreateTourOpen(false)}
         onSubmit={handleCreateTour}
       />
-    </div>
+    </motion.div>
   );
 }

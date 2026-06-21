@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { api } from "@/api/ApiClient";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
@@ -12,8 +13,9 @@ export default function LogoutPage() {
       try {
         await api.post("/api/auth/logout", {});
         logout();
+        toast.success('Logged out successfully');
       } catch (error) {
-        console.error("Logout failed:", error);
+        toast.error('Logout failed, but session cleared');
       } finally {
         navigate("/login");
       }
