@@ -18,6 +18,7 @@ interface TourListActions {
     searchTours: (query: string) => Promise<void>;
     clearSearch: () => Promise<void>;
     refresh: () => Promise<void>;
+    refreshSelectedTour: (id: string) => Promise<void>;
 }
 
 export function useTourListViewModel(): { state: TourListState; actions: TourListActions } {
@@ -96,8 +97,24 @@ export function useTourListViewModel(): { state: TourListState; actions: TourLis
         await loadTours();
     }, [loadTours]);
 
+    const refreshSelectedTour = useCallback(async (id: string) => {
+        try {
+            const res = await TourService.getTour(id);
+            if (res.success && res.data) {
+                const updated: Tour = res.data;
+                setState(prev => ({
+                    ...prev,
+                    selectedTour: updated,
+                    tours: prev.tours.map(t => t.id === id ? updated : t),
+                }));
+            }
+        } catch {
+            // silently fail — selectedTour keeps stale but still usable
+        }
+    }, []);
+
     return {
         state,
-        actions: { loadTours, selectTour, deleteTour, searchTours, clearSearch, refresh },
+        actions: { loadTours, selectTour, deleteTour, searchTours, clearSearch, refresh, refreshSelectedTour },
     };
 }

@@ -150,9 +150,9 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
                 className="h-full rounded-full transition-all duration-500 ease-out shadow-soft"
                 style={{
                   width: `${tour.popularityScore}%`,
-                  background: tour.popularityScore >= 60 ? "linear-gradient(90deg, var(--color-success), var(--color-success)/80)" : 
-                           tour.popularityScore >= 20 ? "linear-gradient(90deg, var(--color-warning), var(--color-warning)/80)" :
-                           "linear-gradient(90deg, var(--color-muted-foreground), var(--color-muted-foreground)/60)"
+                  background: tour.popularityScore >= 60 ? "linear-gradient(90deg, var(--color-success), color-mix(in oklch, var(--color-success) 80%, transparent))" :
+                           tour.popularityScore >= 20 ? "linear-gradient(90deg, var(--color-warning), color-mix(in oklch, var(--color-warning) 80%, transparent))" :
+                           "linear-gradient(90deg, var(--color-muted-foreground), color-mix(in oklch, var(--color-muted-foreground) 60%, transparent))"
                 }}
               />
             </div>
@@ -170,9 +170,9 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
                 className="h-full rounded-full transition-all duration-500 ease-out shadow-soft"
                 style={{
                   width: `${tour.childFriendliness}%`,
-                  background: tour.childFriendliness >= 60 ? "linear-gradient(90deg, var(--color-accent), var(--color-accent)/80)" : 
-                           tour.childFriendliness >= 20 ? "linear-gradient(90deg, var(--color-warning), var(--color-warning)/80)" :
-                           "linear-gradient(90deg, var(--color-muted-foreground), var(--color-muted-foreground)/60)"
+                  background: tour.childFriendliness >= 60 ? "linear-gradient(90deg, var(--color-accent), color-mix(in oklch, var(--color-accent) 80%, transparent))" :
+                           tour.childFriendliness >= 20 ? "linear-gradient(90deg, var(--color-warning), color-mix(in oklch, var(--color-warning) 80%, transparent))" :
+                           "linear-gradient(90deg, var(--color-muted-foreground), color-mix(in oklch, var(--color-muted-foreground) 60%, transparent))"
                 }}
               />
             </div>

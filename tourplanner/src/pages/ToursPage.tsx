@@ -22,7 +22,7 @@ export default function ToursPage() {
   const { state: logState, actions: logActions } = useTourLogViewModel();
   const { state: detailState, actions: detailActions } = useTourDetailViewModel();
   const { tours, selectedTour, loading, searchQuery } = state;
-  const { selectTour, deleteTour, searchTours, refresh } = actions;
+  const { selectTour, deleteTour, searchTours, refresh, refreshSelectedTour } = actions;
   const [isCreateTourOpen, setIsCreateTourOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -134,7 +134,10 @@ export default function ToursPage() {
                   downloadError={detailState.error}
                   logs={logState.logs}
                   onEditLog={logActions.openEditDialog}
-                  onDeleteLog={(id) => logActions.deleteLog(selectedTour.id, id)}
+                  onDeleteLog={async (id) => {
+                    await logActions.deleteLog(selectedTour.id, id);
+                    refreshSelectedTour(selectedTour.id);
+                  }}
                 />
               </div>
             </motion.div>
@@ -182,12 +185,14 @@ export default function ToursPage() {
               if (ok) {
                 toast.success('Log updated successfully');
                 logActions.loadLogs(selectedTour.id);
+                refreshSelectedTour(selectedTour.id);
               }
             } else {
               const ok = await logActions.createLog(selectedTour.id, data);
               if (ok) {
                 toast.success('Log added successfully');
                 logActions.loadLogs(selectedTour.id);
+                refreshSelectedTour(selectedTour.id);
               }
             }
           }}
