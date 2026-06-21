@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ApiError } from "@/api/ApiClient";
 import AuthService from "@/services/AuthService";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 export default function ResetPasswordPage() {
   const { token } = useParams<{ token: string }>();
@@ -54,62 +57,43 @@ export default function ResetPasswordPage() {
           </p>
         </div>
 
-        <div className="panel-soft p-7 sm:p-9">
+        <Card variant="elevated" padding="lg">
           {success ? (
             <div className="space-y-6 text-center">
               <div className="rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
                 Your password has been reset successfully.
               </div>
-              <Link
-                to="/login"
-                className="btn-primary inline-flex w-full justify-center py-4 text-base font-semibold shadow-sm hover:shadow-md"
-              >
-                Sign in
+              <Link to="/login">
+                <Button className="w-full" size="lg">
+                  Sign in
+                </Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="newPassword"
-                  className="mb-2.5 block text-sm font-medium text-foreground"
-                >
-                  New password
-                </label>
-                <input
-                  id="newPassword"
-                  name="newPassword"
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  required
-                  minLength={8}
-                  maxLength={100}
-                  autoComplete="new-password"
-                  className="field-control placeholder-muted-foreground/50"
-                  placeholder="Enter your new password"
-                />
-              </div>
+              <Input
+                id="newPassword"
+                label="New password"
+                type="password"
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
+                required
+                minLength={8}
+                maxLength={100}
+                autoComplete="new-password"
+                placeholder="Enter your new password"
+              />
 
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="mb-2.5 block text-sm font-medium text-foreground"
-                >
-                  Confirm password
-                </label>
-                <input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  required
-                  autoComplete="new-password"
-                  className="field-control placeholder-muted-foreground/50"
-                  placeholder="Confirm your new password"
-                />
-              </div>
+              <Input
+                id="confirmPassword"
+                label="Confirm password"
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                required
+                autoComplete="new-password"
+                placeholder="Confirm your new password"
+              />
 
               {error && (
                 <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
@@ -117,16 +101,17 @@ export default function ResetPasswordPage() {
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="btn-primary w-full py-4 text-base font-semibold shadow-sm hover:shadow-md"
+                loading={submitting}
+                className="w-full"
+                size="lg"
               >
                 {submitting ? "Resetting..." : "Reset password"}
-              </button>
+              </Button>
             </form>
           )}
-        </div>
+        </Card>
 
         <p className="mt-7 text-center text-sm text-muted-foreground/80">
           Need a new link?{" "}

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { TourLog, TourLogRequest } from "@/types/api";
 
@@ -13,14 +15,40 @@ interface CreateTourLogDialogProps {
 const difficulties = ["EASY", "MEDIUM", "HARD"] as const;
 
 export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: CreateTourLogDialogProps) {
-  const [form, setForm] = useState({
-    dateTime: new Date().toISOString().slice(0, 16),
+  function toLocalDatetimeString(date: Date): string {
+    const offset = date.getTimezoneOffset();
+    return new Date(date.getTime() - offset * 60000).toISOString().slice(0, 16);
+  }
+
+  const initialFormState = {
+    dateTime: toLocalDatetimeString(new Date()),
     comment: "",
     difficulty: "EASY" as typeof difficulties[number],
     totalDistance: "",
     totalTime: "",
     rating: 5,
-  });
+  };
+
+  const [form, setForm] = useState(initialFormState);
+
+  useEffect(() => {
+    if (editLog) {
+      setForm({
+        dateTime: toLocalDatetimeString(new Date(editLog.dateTime + 'Z')),
+        comment: editLog.comment,
+        difficulty: editLog.difficulty,
+        totalDistance: String(editLog.totalDistance),
+        totalTime: String(editLog.totalTime),
+        rating: editLog.rating,
+      });
+    }
+  }, [editLog]);
+
+  useEffect(() => {
+    if (!open) {
+      setForm(initialFormState);
+    }
+  }, [open]);
 
   const isValid =
     form.dateTime &&
@@ -64,59 +92,49 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Record your tour experience.</p>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="icon-button"
+            aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="log-date" className="block text-sm font-medium text-foreground mb-2">
-              Date & Time
-            </label>
-            <input
-              id="log-date"
-              type="datetime-local"
-              value={form.dateTime}
-              onChange={(e) => setForm((p) => ({ ...p, dateTime: e.target.value }))}
-              className="field-control"
-            />
-          </div>
+          <Input
+            id="log-date"
+            label="Date & Time"
+            type="datetime-local"
+            value={form.dateTime}
+            onChange={(e) => setForm((p) => ({ ...p, dateTime: e.target.value }))}
+            required
+          />
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="log-distance" className="block text-sm font-medium text-foreground mb-2">
-                Distance (km)
-              </label>
-              <input
-                id="log-distance"
-                type="number"
-                step="0.1"
-                min="0"
-                value={form.totalDistance}
-                onChange={(e) => setForm((p) => ({ ...p, totalDistance: e.target.value }))}
-                placeholder="5.0"
-                className="field-control"
-              />
-            </div>
-            <div>
-              <label htmlFor="log-time" className="block text-sm font-medium text-foreground mb-2">
-                Time (minutes)
-              </label>
-              <input
-                id="log-time"
-                type="number"
-                min="0"
-                value={form.totalTime}
-                onChange={(e) => setForm((p) => ({ ...p, totalTime: e.target.value }))}
-                placeholder="30"
-                className="field-control"
-              />
-            </div>
+            <Input
+              id="log-distance"
+              label="Distance (km)"
+              type="number"
+              step="0.1"
+              min="0"
+              value={form.totalDistance}
+              onChange={(e) => setForm((p) => ({ ...p, totalDistance: e.target.value }))}
+              placeholder="5.0"
+              required
+            />
+            <Input
+              id="log-time"
+              label="Time (minutes)"
+              type="number"
+              min="0"
+              value={form.totalTime}
+              onChange={(e) => setForm((p) => ({ ...p, totalTime: e.target.value }))}
+              placeholder="30"
+              required
+            />
           </div>
 
           <div>
@@ -174,23 +192,19 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
 
           {/* Actions */}
           <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={onClose}
-              className="btn-secondary"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={!isValid}
-              className={cn(
-                "btn-primary",
-                !isValid && "opacity-50 cursor-not-allowed"
-              )}
             >
               {editLog ? "Save Changes" : "Add Log"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

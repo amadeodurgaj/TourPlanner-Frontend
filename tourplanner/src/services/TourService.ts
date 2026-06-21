@@ -84,14 +84,7 @@ export const TourService = {
 
     importTours: async (file: File): Promise<ApiResponse<number>> => {
         const text = await file.text();
-        const response = await fetch(`${API_URL}/api/tours/import`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
-            body: text,
-        });
-        if (!response.ok) throw new Error('Import failed');
-        return response.json();
+        return api.post<ApiResponse<number>>("/api/tours/import", JSON.parse(text));
     },
 
     downloadReport: async (id: string, tourName: string): Promise<void> => {

@@ -4,6 +4,8 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { cn, formatDistance, formatTime } from "@/lib/utils";
 import { API_URL } from "@/api/ApiClient";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { ImageWithPlaceholder } from "@/components/ImageWithPlaceholder";
 import type { Tour, TourLog } from "@/types/api";
 import { ImageService } from "@/services/ImageService";
@@ -65,75 +67,79 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
           )}
         </div>
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onDownloadReport}
             disabled={downloading}
-            className="icon-button hover:text-accent/80 hover:bg-accent/10"
             aria-label="Download PDF report"
           >
             <FileDown className={`w-5 h-5 ${downloading ? "animate-pulse" : ""}`} />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onEdit}
-            className="icon-button hover:text-accent/80 hover:bg-accent/10"
             aria-label="Edit tour"
           >
             <Pencil className="w-5 h-5" />
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onDelete}
-            className="icon-button hover:bg-destructive/15 hover:text-destructive"
             aria-label="Delete tour"
+            className="hover:bg-destructive/15 hover:text-destructive"
           >
             <Trash2 className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
       </div>
 
-      {/* Location cards - Enhanced with better visual hierarchy */}
+      {/* Location cards */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="panel-soft p-5 transition-smooth hover:border-border/80">
+        <Card variant="default" padding="md">
           <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">From Location</p>
           <p className="text-lg text-foreground font-medium flex items-center gap-3">
             <MapPin className="w-5 h-5 text-accent flex-shrink-0" />
             <span className="truncate">{tour.fromLocation}</span>
           </p>
-        </div>
-        <div className="panel-soft p-5 transition-smooth hover:border-border/80">
+        </Card>
+        <Card variant="default" padding="md">
           <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">To Location</p>
           <p className="text-lg text-foreground font-medium flex items-center gap-3">
             <ArrowRight className="w-5 h-5 text-accent flex-shrink-0" />
             <span className="truncate">{tour.toLocation}</span>
           </p>
-        </div>
+        </Card>
       </div>
 
-      {/* Stats - Enhanced with better visual presentation */}
+      {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="panel-soft p-5">
+        <Card variant="default" padding="md">
           <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">Distance</p>
           <p className="text-2xl font-bold text-foreground tabular-nums text-accent">{formatDistance(tour.distance)}</p>
-        </div>
-        <div className="panel-soft p-5">
+        </Card>
+        <Card variant="default" padding="md">
           <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-2 font-medium">Estimated Time</p>
           <p className="text-2xl font-bold text-foreground flex items-center gap-3">
             <Timer className="w-6 h-6 text-accent/80" />
             <span className="tabular-nums">{tour.estimatedTime || "Not set"}</span>
           </p>
-        </div>
+        </Card>
       </div>
 
-      {/* Transport - Enhanced styling */}
-      <div className="panel-soft p-5">
+      {/* Transport */}
+      <Card variant="default" padding="md">
         <p className="text-xs text-muted-foreground/70 uppercase tracking-wider mb-3 font-medium">Transport Type</p>
         <span className="inline-flex rounded-xl bg-gradient-to-r from-accent/20 to-accent/10 px-4 py-2 text-lg font-semibold capitalize text-accent ring-1 ring-accent/25 shadow-soft">
           {tour.transportType}
         </span>
-      </div>
+      </Card>
 
-      {/* Scores - Enhanced with better progress bars */}
+      {/* Scores */}
       <div className="grid gap-4 sm:grid-cols-2">
-        <div className="panel-soft p-5">
+        <Card variant="default" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <Star className="w-5 h-5 text-success" />
             <p className="text-sm text-muted-foreground/70 uppercase tracking-wider font-medium">Popularity Score</p>
@@ -152,8 +158,8 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
             </div>
             <span className="text-2xl font-bold text-foreground tabular-nums">{tour.popularityScore}%</span>
           </div>
-        </div>
-        <div className="panel-soft p-5">
+        </Card>
+        <Card variant="default" padding="md">
           <div className="flex items-center gap-2 mb-3">
             <Star className="w-5 h-5 text-accent" />
             <p className="text-sm text-muted-foreground/70 uppercase tracking-wider font-medium">Child-Friendly</p>
@@ -172,11 +178,11 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
             </div>
             <span className="text-2xl font-bold text-foreground tabular-nums">{tour.childFriendliness}%</span>
           </div>
-        </div>
+        </Card>
       </div>
 
-      {/* Image - Enhanced with better visual presentation */}
-      <div className="panel-soft p-5">
+      {/* Image */}
+      <Card variant="default" padding="md">
         <div className="flex items-center justify-between mb-4">
           <p className="text-lg font-semibold text-foreground">Tour Image</p>
           <input
@@ -186,18 +192,15 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
             onChange={handleImageUpload}
             className="hidden"
           />
-          <button
+          <Button
+            variant="secondary"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="btn-secondary px-4 py-2 text-sm hover:bg-accent/10 hover:text-accent"
+            loading={uploading}
+            leftIcon={!uploading ? <Upload className="w-4 h-4" /> : undefined}
           >
-            {uploading ? (
-              <span className="spinner-sm" />
-            ) : (
-              <Upload className="w-4 h-4" />
-            )}
-            <span>{uploading ? "Uploading..." : "Upload Image"}</span>
-          </button>
+            {uploading ? "Uploading..." : "Upload Image"}
+          </Button>
         </div>
         {tour.imagePath ? (
           <div className="relative aspect-video overflow-hidden rounded-xl bg-muted/80 ring-1 ring-border/70 shadow-medium">
@@ -219,10 +222,10 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
-      {/* Map - Enhanced styling */}
-      <div className="panel-soft p-5">
+      {/* Map */}
+      <Card variant="default" padding="md">
         <div className="flex items-center justify-between mb-4">
           <p className="text-lg font-semibold text-foreground">Route Map</p>
         </div>
@@ -249,25 +252,24 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
             </div>
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Tour Logs - Enhanced section header */}
       <div>
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-2xl font-bold text-foreground">Tour Logs</h2>
-          <button
+          <Button
             onClick={onCreateLog}
-            className="btn-primary px-4 py-2.5 shadow-sm hover:shadow-md"
+            leftIcon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
             Add Log
-          </button>
+          </Button>
         </div>
 
         {logs && logs.length > 0 ? (
           <div className="space-y-3">
             {logs.map((log) => (
-              <div key={log.id} className="panel-soft p-4 transition-smooth hover:border-border">
+              <Card key={log.id} variant="default" padding="sm">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -319,23 +321,24 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
                     )}
                   </div>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         ) : (
-          <div className="panel-soft flex flex-col items-center justify-center py-12 text-center">
+          <Card variant="default" padding="lg" className="flex flex-col items-center justify-center text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary">
               <Plus className="w-5 h-5 text-muted-foreground" />
             </div>
             <p className="text-sm text-muted-foreground">No logs yet for this tour</p>
-            <button
+            <Button
+              variant="secondary"
               onClick={onCreateLog}
-              className="btn-secondary mt-3 text-accent"
+              leftIcon={<Plus className="w-4 h-4" />}
+              className="mt-3"
             >
-              <Plus className="w-4 h-4" />
               Add First Log
-            </button>
-          </div>
+            </Button>
+          </Card>
         )}
       </div>
     </div>

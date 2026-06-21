@@ -2,6 +2,8 @@ import { toast } from 'sonner';
 import { Menu, X, Plus, Search, Download, Upload, RefreshCw } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { cn } from "../lib/utils";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import { TourList } from "./TourList";
 import { TourService } from "@/services/TourService";
 import type { Tour } from "@/types/api";
@@ -106,18 +108,15 @@ export function Sidebar({
             </button>
           </div>
 
-          {/* Search - Enhanced with better focus states */}
+          {/* Search */}
           <div className="border-b border-border/60 p-4">
-            <div className="relative group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/80 group-focus-within:text-accent transition-colors" />
-              <input
-                type="text"
-                placeholder="Search tours..."
-                value={query}
-                onChange={(e) => handleQueryChange(e.target.value)}
-                className="field-control pl-11 focus:ring-accent/20"
-              />
-            </div>
+            <Input
+              type="text"
+              placeholder="Search tours..."
+              value={query}
+              onChange={(e) => handleQueryChange(e.target.value)}
+              leftIcon={<Search className="w-4 h-4" />}
+            />
           </div>
 
           {/* Tour list - Enhanced with better spacing and hierarchy */}
@@ -128,13 +127,14 @@ export function Sidebar({
               </h3>
               <div className="flex items-center gap-1.5">
                 {onRefresh && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={onRefresh}
-                    className="rounded-lg p-2 text-muted-foreground/80 transition-smooth hover:bg-accent/10 hover:text-accent active-press"
                     title="Refresh"
                   >
                     <RefreshCw className="w-4 h-4" />
-                  </button>
+                  </Button>
                 )}
                 <span className="rounded-full bg-accent/10 px-2.5 py-1 text-xs text-accent font-medium tabular-nums">{tours.length}</span>
               </div>
@@ -160,34 +160,33 @@ export function Sidebar({
             )}
           </div>
 
-          {/* Actions - Enhanced button styling */}
+          {/* Actions */}
           <div className="space-y-3 border-t border-border/60 p-4">
-            <button
+            <Button
               onClick={onCreateTour}
-              className="btn-primary w-full shadow-sm hover:shadow-md"
+              className="w-full"
+              leftIcon={<Plus className="w-4 h-4" />}
             >
-              <Plus className="w-4 h-4" />
               Create Tour
-            </button>
+            </Button>
 
             <div className="grid grid-cols-2 gap-2">
-              <button
+              <Button
+                variant="secondary"
                 onClick={handleExport}
-                className="btn-secondary text-xs hover:border-accent/40 hover:bg-accent/10"
-                title="Export Tours"
+                leftIcon={<Download className="w-4 h-4" />}
+                className="text-xs"
               >
-                <Download className="w-4 h-4" />
-                <span>Export</span>
-              </button>
-              <button
+                Export
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={handleImportClick}
-                disabled={importing}
-                className="btn-secondary text-xs hover:border-accent/40 hover:bg-accent/10 disabled:opacity-60"
-                title="Import Tours"
+                loading={importing}
+                className="text-xs"
               >
-                <Upload className="w-4 h-4" />
-                <span>{importing ? "..." : "Import"}</span>
-              </button>
+                Import
+              </Button>
             </div>
           </div>
 

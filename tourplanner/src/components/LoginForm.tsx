@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'sonner';
 import { useAuth } from "@/context/AuthContext";
-import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 export default function LoginForm() {
   const [username, setUsername] = useState("");
@@ -35,48 +37,30 @@ export default function LoginForm() {
           </p>
         </div>
 
-        {/* Form Card - Enhanced with better shadow and padding */}
-        <div className="panel-soft p-7 sm:p-9">
+        {/* Form Card */}
+        <Card variant="elevated" padding="lg">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-foreground mb-2.5"
-              >
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-                className="field-control placeholder-muted-foreground/50"
-                placeholder="Enter your username"
-              />
-            </div>
+            <Input
+              id="username"
+              label="Username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+              placeholder="Enter your username"
+            />
 
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-foreground mb-2.5"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-                className="field-control placeholder-muted-foreground/50"
-                placeholder="Enter your password"
-              />
-            </div>
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              placeholder="Enter your password"
+            />
 
             <div className="flex items-center justify-end">
               <Link
@@ -87,14 +71,15 @@ export default function LoginForm() {
               </Link>
             </div>
 
-            <button
+            <Button
               type="submit"
-              className="btn-primary w-full py-4 text-base font-semibold shadow-sm hover:shadow-md"
+              className="w-full"
+              size="lg"
             >
               Sign in
-            </button>
+            </Button>
           </form>
-        </div>
+        </Card>
 
         {/* Register link - Enhanced styling */}
         <p className="mt-7 text-sm text-muted-foreground/80 text-center">

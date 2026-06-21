@@ -2,6 +2,7 @@ import { api, ApiError } from "@/api/ApiClient";
 import type {
   ApiResponse,
   ChangePasswordRequest,
+  CurrentUserDTO,
   UpdateProfileRequest,
   UserProfile,
   UserRegisterRequest,
@@ -23,7 +24,19 @@ export const UserService = {
   // ─── NEW: Get current user profile ────────────────────────────────────
   getProfile: async (): Promise<ApiResponse<UserProfile>> => {
     try {
-      return await api.get<ApiResponse<UserProfile>>('/api/users/me');
+      const response = await api.get<ApiResponse<CurrentUserDTO>>('/api/auth/me');
+      return {
+        success: response.success,
+        message: response.message,
+        data: response.data
+          ? {
+              id: response.data.id,
+              username: response.data.username,
+              email: response.data.email,
+              registrationDate: response.data.registrationDate,
+            }
+          : undefined,
+      };
     } catch (error) {
       if (error instanceof ApiError) {
         throw error;

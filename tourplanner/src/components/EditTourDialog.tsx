@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
 import { cn } from "@/lib/utils";
 import type { LocationSearchResult, Tour, TourRequest } from "@/types/api";
@@ -95,28 +97,26 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
             </h2>
             <p className="text-sm text-muted-foreground mt-1">Update tour details.</p>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="icon-button"
+            aria-label="Close dialog"
           >
             <X className="w-5 h-5" />
-          </button>
+          </Button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label htmlFor="edit-tour-name" className="block text-sm font-medium text-foreground mb-2">
-              Name
-            </label>
-            <input
-              id="edit-tour-name"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="field-control"
-            />
-          </div>
+          <Input
+            id="edit-tour-name"
+            label="Name"
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
+            required
+          />
 
           <div>
             <label htmlFor="edit-tour-description" className="block text-sm font-medium text-foreground mb-2">
@@ -168,23 +168,19 @@ export function EditTourDialog({ open, tour, onClose, onSubmit }: EditTourDialog
 
           {/* Actions */}
           <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={onClose}
-              className="btn-secondary"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={!isValid}
-              className={cn(
-                "btn-primary",
-                !isValid && "opacity-50 cursor-not-allowed"
-              )}
             >
               Save Changes
-            </button>
+            </Button>
           </div>
         </form>
       </div>

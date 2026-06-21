@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { MenuIcon, XIcon, SunIcon, MoonIcon } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { Button } from "@/components/ui/Button";
 import LogoutButton from "@/components/LogoutButton";
 
 interface NavLinkType {
@@ -83,8 +84,9 @@ export const Navbar = ({
 
         {/* Desktop Actions - Enhanced theme toggle */}
         <div className="hidden md:flex items-center gap-3">
-          <button
-            className="icon-button hover:scale-110"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => {
               localStorage.setItem('theme-manual', 'true');
               setTheme(theme === "light" ? "dark" : "light");
@@ -92,19 +94,21 @@ export const Navbar = ({
             aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
           >
             {theme === "light" ? <MoonIcon size={18} /> : <SunIcon size={18} />}
-          </button>
+          </Button>
 
           {isAuthenticated && <LogoutButton />}
         </div>
 
         {/* Mobile Menu Button */}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleMenu}
-          className="icon-button md:hidden"
+          className="md:hidden"
           aria-label="Toggle menu"
         >
           {isMenuOpen ? <XIcon size={20} /> : <MenuIcon size={20} />}
-        </button>
+        </Button>
       </nav>
 
       {/* Mobile Menu */}
@@ -135,7 +139,7 @@ export const Navbar = ({
 
           <div className="mt-2 border-t border-border/70 pt-2">
             <button
-              className="flex w-full items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground"
+              className="flex w-full items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-muted-foreground transition-smooth hover:bg-muted hover:text-foreground cursor-pointer"
               onClick={() => {
                 localStorage.setItem('theme-manual', 'true');
                 setTheme(theme === "light" ? "dark" : "light");

@@ -2,6 +2,7 @@ import { LogOut } from 'lucide-react';
 import AuthService from '@/services/AuthService';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/Button';
 
 const LogoutButton = () => {
   const { logout } = useAuth();
@@ -18,14 +19,15 @@ const LogoutButton = () => {
   };
 
   return (
-    <button
+    <Button
+      variant="ghost"
       onClick={handleLogout}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-smooth active-press"
+      leftIcon={<LogOut className="w-4 h-4" />}
       aria-label="Logout"
+      className="hover:bg-destructive/10 hover:text-destructive"
     >
-      <LogOut className="w-4 h-4" />
       <span className="hidden lg:inline">Logout</span>
-    </button>
+    </Button>
   );
 };
 

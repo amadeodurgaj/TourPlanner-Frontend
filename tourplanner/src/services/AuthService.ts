@@ -2,6 +2,7 @@ import { api, ApiError } from "@/api/ApiClient";
 import {
     ForgotPasswordRequest,
     ForgotPasswordResponse,
+    LoginData,
     ResetPasswordRequest,
     ResetPasswordResponse,
     UserLoginRequest,
@@ -21,9 +22,9 @@ export const AuthService = {
         }
     },
 
-    getCurrentUser: async (): Promise<{ success: boolean; message: string; data: { username: string; token: string } } | null> => {
+    getCurrentUser: async (): Promise<{ success: boolean; message: string; data: LoginData } | null> => {
         try {
-            return await api.get<{ success: boolean; message: string; data: { username: string; token: string } }>('/api/auth/me');
+            return await api.get<{ success: boolean; message: string; data: LoginData }>('/api/auth/me');
         } catch {
             return null;
         }

@@ -1,5 +1,6 @@
 import { Calendar, Gauge, Timer, Star, Pencil, Trash2 } from "lucide-react";
 import { cn, formatDistance, formatTime } from "@/lib/utils";
+import { Card } from "@/components/ui/Card";
 import type { TourLog } from "@/types/api";
 
 interface TourLogListProps {
@@ -26,10 +27,8 @@ export function TourLogList({ logs, onEdit, onDelete }: TourLogListProps) {
   return (
     <ul className="flex flex-col gap-3">
       {logs.map((log) => (
-        <li
-          key={log.id}
-          className="group panel-soft p-4 transition-smooth hover:border-border"
-        >
+        <li key={log.id}>
+          <Card variant="default" padding="sm" className="group">
           <div className="flex items-start justify-between">
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -83,6 +82,7 @@ export function TourLogList({ logs, onEdit, onDelete }: TourLogListProps) {
               {log.comment}
             </p>
           )}
+          </Card>
         </li>
       ))}
     </ul>

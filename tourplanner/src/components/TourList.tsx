@@ -11,6 +11,7 @@ interface TourListProps {
   selectedId?: string;
   onSelect: (tour: Tour) => void;
   onDelete: (id: string) => void;
+  onEdit?: (tour: Tour) => void;
 }
 
 const transportIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -26,7 +27,7 @@ const itemVariants = {
   exit: { opacity: 0, scale: 0.95 },
 };
 
-export const TourList = memo(function TourList({ tours, selectedId, onSelect, onDelete }: TourListProps) {
+export const TourList = memo(function TourList({ tours, selectedId, onSelect, onDelete, onEdit }: TourListProps) {
   if (tours.length === 0) {
     return (
       <p className="text-sm text-muted-foreground px-3 py-8 text-center">

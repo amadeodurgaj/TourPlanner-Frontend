@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
 import PlaceAutocompleteInput from "./PlaceAutocompleteInput";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import type { LocationSearchResult, TourRequest } from "@/types/api";
@@ -112,33 +114,27 @@ export default function CreateTourDialog({
               Add the basic tour details to get started.
             </p>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={onClose}
-            className="icon-button"
+            aria-label="Close dialog"
           >
             <X size={20} />
-          </button>
+          </Button>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label
-              htmlFor="tour-name"
-              className="mb-2 block text-sm font-medium text-foreground"
-            >
-              Name
-            </label>
-            <input
-              id="tour-name"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
-              placeholder="Morning Hike"
-              className="field-control"
-            />
-          </div>
+          <Input
+            id="tour-name"
+            label="Name"
+            type="text"
+            value={form.name}
+            onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+            placeholder="Morning Hike"
+            required
+          />
 
           <div>
             <label
@@ -197,20 +193,19 @@ export default function CreateTourDialog({
 
           {/* Actions */}
           <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
-            <button
+            <Button
               type="button"
+              variant="secondary"
               onClick={onClose}
-              className="btn-secondary"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
               disabled={!isValid}
-              className="btn-primary"
             >
               Create Tour
-            </button>
+            </Button>
           </div>
         </form>
       </motion.div>

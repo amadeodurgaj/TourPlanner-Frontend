@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { User, Mail, Calendar, Lock, Key, CheckCircle, AlertCircle } from "lucide-react";
 import { useProfileViewModel } from "@/viewmodels/useProfileViewModel";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 export default function ProfilePage() {
   const { state, actions } = useProfileViewModel();
@@ -72,19 +75,16 @@ export default function ProfilePage() {
   if (!profile) {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center px-6 py-16">
-        <div className="panel-soft max-w-md px-8 py-12 text-center">
+        <Card variant="elevated" padding="lg" className="max-w-md text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
             <AlertCircle className="h-8 w-8 text-destructive" />
           </div>
           <h2 className="text-xl font-semibold text-foreground mb-2">Unable to load profile</h2>
           <p className="text-sm text-muted-foreground/80">Please try refreshing the page or logging out and back in.</p>
-          <button
-            onClick={loadProfile}
-            className="btn-primary mt-6"
-          >
+          <Button onClick={loadProfile} className="mt-6">
             Retry
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
     );
   }
@@ -123,55 +123,35 @@ export default function ProfilePage() {
 
       <div className="grid gap-8">
         {/* ─── SECTION: Profile Information ──────────────────────────── */}
-        <div className="panel-soft p-6 md:p-8">
+        <Card variant="elevated" padding="lg">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-3 mb-6">
             <User className="h-5 w-5 text-accent" />
             Personal Information
           </h2>
 
           <form onSubmit={handleProfileSubmit} className="space-y-6">
-            {/* Username */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-foreground mb-2">
-                Username
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <User className="h-4 w-4" />
-                </div>
-                <input
-                  id="username"
-                  type="text"
-                  value={profileForm.username}
-                  onChange={(e) => setProfileForm((p) => ({ ...p, username: e.target.value }))}
-                  className="field-control pl-10"
-                  required
-                  minLength={3}
-                  maxLength={50}
-                />
-              </div>
-            </div>
+            <Input
+              id="username"
+              label="Username"
+              type="text"
+              value={profileForm.username}
+              onChange={(e) => setProfileForm((p) => ({ ...p, username: e.target.value }))}
+              leftIcon={<User className="h-4 w-4" />}
+              required
+              minLength={3}
+              maxLength={50}
+            />
 
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Mail className="h-4 w-4" />
-                </div>
-                <input
-                  id="email"
-                  type="email"
-                  value={profileForm.email}
-                  onChange={(e) => setProfileForm((p) => ({ ...p, email: e.target.value }))}
-                  className="field-control pl-10"
-                  required
-                  maxLength={255}
-                />
-              </div>
-            </div>
+            <Input
+              id="email"
+              label="Email Address"
+              type="email"
+              value={profileForm.email}
+              onChange={(e) => setProfileForm((p) => ({ ...p, email: e.target.value }))}
+              leftIcon={<Mail className="h-4 w-4" />}
+              required
+              maxLength={255}
+            />
 
             {/* Registration Date (read-only) */}
             <div>
@@ -181,112 +161,74 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Calendar className="h-4 w-4" />
                 <span className="text-sm">
-                  {new Date(profile.registrationDate).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {profile.registrationDate
+                    ? new Date(profile.registrationDate).toLocaleDateString(undefined, {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
+                    : "Unknown"}
                 </span>
               </div>
             </div>
 
             {/* Submit Button */}
             <div className="flex justify-end">
-              <button
+              <Button
                 type="submit"
-                disabled={updating}
-                className="btn-primary px-6 py-2.5 shadow-sm hover:shadow-md disabled:opacity-50"
+                loading={updating}
               >
-                {updating ? (
-                  <span className="spinner-sm border-t-accent-foreground mr-2" />
-                ) : null}
                 Save Changes
-              </button>
+              </Button>
             </div>
           </form>
-        </div>
+        </Card>
 
         {/* ─── SECTION: Change Password ──────────────────────────────── */}
-        <div className="panel-soft p-6 md:p-8">
+        <Card variant="elevated" padding="lg">
           <h2 className="text-xl font-semibold text-foreground flex items-center gap-3 mb-6">
             <Lock className="h-5 w-5 text-accent" />
             Change Password
           </h2>
 
           <form onSubmit={handlePasswordSubmit} className="space-y-6">
-            {/* Current Password */}
-            <div>
-              <label htmlFor="current-password" className="block text-sm font-medium text-foreground mb-2">
-                Current Password
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Key className="h-4 w-4" />
-                </div>
-                <input
-                  id="current-password"
-                  type="password"
-                  value={passwordForm.oldPassword}
-                  onChange={(e) =>
-                    setPasswordForm((p) => ({ ...p, oldPassword: e.target.value }))
-                  }
-                  className="field-control pl-10"
-                  required
-                  minLength={1}
-                />
-              </div>
-            </div>
+            <Input
+              id="current-password"
+              label="Current Password"
+              type="password"
+              value={passwordForm.oldPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, oldPassword: e.target.value }))}
+              leftIcon={<Key className="h-4 w-4" />}
+              required
+              minLength={1}
+            />
 
-            {/* New Password */}
-            <div>
-              <label htmlFor="new-password" className="block text-sm font-medium text-foreground mb-2">
-                New Password
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Lock className="h-4 w-4" />
-                </div>
-                <input
-                  id="new-password"
-                  type="password"
-                  value={passwordForm.newPassword}
-                  onChange={(e) =>
-                    setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))
-                  }
-                  className="field-control pl-10"
-                  required
-                  minLength={8}
-                  maxLength={100}
-                />
-              </div>
-              <p className="mt-1.5 text-xs text-muted-foreground/70">Must be at least 8 characters.</p>
-            </div>
+            <Input
+              id="new-password"
+              label="New Password"
+              type="password"
+              value={passwordForm.newPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
+              leftIcon={<Lock className="h-4 w-4" />}
+              hint="Must be at least 8 characters."
+              required
+              minLength={8}
+              maxLength={100}
+            />
 
-            {/* Confirm Password */}
-            <div>
-              <label htmlFor="confirm-password" className="block text-sm font-medium text-foreground mb-2">
-                Confirm New Password
-              </label>
-              <div className="relative">
-                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                  <Lock className="h-4 w-4" />
-                </div>
-                <input
-                  id="confirm-password"
-                  type="password"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) =>
-                    setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))
-                  }
-                  className="field-control pl-10"
-                  required
-                  minLength={8}
-                  maxLength={100}
-                />
-              </div>
-            </div>
+            <Input
+              id="confirm-password"
+              label="Confirm New Password"
+              type="password"
+              value={passwordForm.confirmPassword}
+              onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+              leftIcon={<Lock className="h-4 w-4" />}
+              required
+              minLength={8}
+              maxLength={100}
+            />
 
-            {/* Password mismatch immediate feedback (optional) */}
+            {/* Password mismatch immediate feedback */}
             {passwordForm.newPassword &&
               passwordForm.confirmPassword &&
               passwordForm.newPassword !== passwordForm.confirmPassword && (
@@ -298,19 +240,16 @@ export default function ProfilePage() {
 
             {/* Submit Button */}
             <div className="flex justify-end">
-              <button
+              <Button
                 type="submit"
-                disabled={updating || !passwordForm.oldPassword || !passwordForm.newPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
-                className="btn-primary px-6 py-2.5 shadow-sm hover:shadow-md disabled:opacity-50"
+                loading={updating}
+                disabled={!passwordForm.oldPassword || !passwordForm.newPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
               >
-                {updating ? (
-                  <span className="spinner-sm border-t-accent-foreground mr-2" />
-                ) : null}
                 Change Password
-              </button>
+              </Button>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
     </div>
   );

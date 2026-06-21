@@ -6,7 +6,6 @@ export interface ApiResponse<T> {
 
 export interface LoginData {
   username: string;
-  email: string;
   token: string;
 }
 
@@ -96,11 +95,19 @@ export interface TourLog {
 
 export type TourLogRequest = Omit<TourLog, 'id' | 'tourId' | 'createdAt' | 'updatedAt'>;
 
-export interface UserProfile {
+export interface CurrentUserDTO {
   id: string;
   username: string;
   email: string;
   registrationDate: string;
+  token: string;
+}
+
+export interface UserProfile {
+  id: string;
+  username: string;
+  email: string;
+  registrationDate: string | null;
 }
 
 export interface UpdateProfileRequest {

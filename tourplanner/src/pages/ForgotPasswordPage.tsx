@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ApiError } from "@/api/ApiClient";
 import AuthService from "@/services/AuthService";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -45,7 +48,7 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        <div className="panel-soft p-7 sm:p-9">
+        <Card variant="elevated" padding="lg">
           {submittedEmail ? (
             <div className="space-y-6 text-center">
               <div className="rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
@@ -62,34 +65,24 @@ export default function ForgotPasswordPage() {
                 </Link>
               )}
 
-              <Link
-                to="/login"
-                className="btn-primary inline-flex w-full justify-center py-4 text-base font-semibold shadow-sm hover:shadow-md"
-              >
-                Back to sign in
+              <Link to="/login">
+                <Button className="w-full" size="lg">
+                  Back to sign in
+                </Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="mb-2.5 block text-sm font-medium text-foreground"
-                >
-                  Email
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  autoComplete="email"
-                  className="field-control placeholder-muted-foreground/50"
-                  placeholder="Enter your email address"
-                />
-              </div>
+              <Input
+                id="email"
+                label="Email"
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                autoComplete="email"
+                placeholder="Enter your email address"
+              />
 
               {error && (
                 <div className="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-center text-sm text-destructive">
@@ -97,16 +90,17 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
 
-              <button
+              <Button
                 type="submit"
-                disabled={submitting}
-                className="btn-primary w-full py-4 text-base font-semibold shadow-sm hover:shadow-md"
+                loading={submitting}
+                className="w-full"
+                size="lg"
               >
                 {submitting ? "Requesting..." : "Request reset"}
-              </button>
+              </Button>
             </form>
           )}
-        </div>
+        </Card>
 
         <p className="mt-7 text-center text-sm text-muted-foreground/80">
           Remember your password?{" "}

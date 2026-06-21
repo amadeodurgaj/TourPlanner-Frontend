@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, Clock, Images, Map, MapPin } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 
 export default function Home() {
   return (
@@ -26,18 +28,16 @@ export default function Home() {
 
           {/* CTA Buttons - Enhanced with better spacing and shadows */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to="/register"
-              className="btn-primary px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 active-press"
-            >
-              Get Started
-              <ArrowRight className="w-4 h-4" />
+            <Link to="/register">
+              <Button size="lg" className="shadow-lg hover:shadow-xl">
+                Get Started
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </Link>
-            <Link
-              to="/login"
-              className="btn-secondary px-8 py-4 border-border/80 hover:border-accent/40"
-            >
-              Sign In
+            <Link to="/login">
+              <Button variant="outline" size="lg">
+                Sign In
+              </Button>
             </Link>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {/* Feature 1 - Track Routes */}
-            <div className="panel-soft p-7 text-center hover-lift transition-smooth">
+            <Card variant="elevated" padding="lg" className="text-center hover:-translate-y-0.5 transition-transform duration-250">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-accent/15 to-accent/5 ring-1 ring-accent/20">
                 <Map className="w-7 h-7 text-accent" />
               </div>
@@ -59,10 +59,10 @@ export default function Home() {
               <p className="text-base text-muted-foreground/80 leading-relaxed">
                 Map your journeys with detailed route information and location data.
               </p>
-            </div>
+            </Card>
 
             {/* Feature 2 - Log Experiences */}
-            <div className="panel-soft p-7 text-center hover-lift transition-smooth">
+            <Card variant="elevated" padding="lg" className="text-center hover:-translate-y-0.5 transition-transform duration-250">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-success/15 to-success/5 ring-1 ring-success/20">
                 <Clock className="w-7 h-7 text-success" />
               </div>
@@ -70,10 +70,10 @@ export default function Home() {
               <p className="text-base text-muted-foreground/80 leading-relaxed">
                 Record distance, time, difficulty, and your personal rating for each tour.
               </p>
-            </div>
+            </Card>
 
             {/* Feature 3 - Upload Photos */}
-            <div className="panel-soft p-7 text-center hover-lift transition-smooth">
+            <Card variant="elevated" padding="lg" className="text-center hover:-translate-y-0.5 transition-transform duration-250">
               <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-warning/15 to-warning/5 ring-1 ring-warning/20">
                 <Images className="w-7 h-7 text-warning" />
               </div>
@@ -81,7 +81,7 @@ export default function Home() {
               <p className="text-base text-muted-foreground/80 leading-relaxed">
                 Add photos to your tours and create a visual travel diary.
               </p>
-            </div>
+            </Card>
           </div>
         </div>
       </section>
