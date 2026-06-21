@@ -55,7 +55,8 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
     form.difficulty &&
     form.totalDistance.trim() &&
     form.totalTime.trim() &&
-    form.rating > 0;
+    form.rating > 0 &&
+    form.comment.trim().length > 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,7 +140,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
 
           <div>
             <label htmlFor="log-difficulty" className="block text-sm font-medium text-foreground mb-2">
-              Difficulty
+              Difficulty <span className="text-destructive">*</span>
             </label>
             <select
               id="log-difficulty"
@@ -156,7 +157,9 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">Rating</label>
+            <label className="block text-sm font-medium text-foreground mb-2">
+              Rating <span className="text-destructive">*</span>
+            </label>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button
@@ -178,7 +181,7 @@ export function CreateTourLogDialog({ open, editLog, onClose, onSubmit }: Create
 
           <div>
             <label htmlFor="log-comment" className="block text-sm font-medium text-foreground mb-2">
-              Comment (optional)
+              Comment <span className="text-destructive">*</span>
             </label>
             <textarea
               id="log-comment"
