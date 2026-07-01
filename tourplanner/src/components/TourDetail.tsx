@@ -237,6 +237,7 @@ const TourDetail = memo(function TourDetail({ tour, onEdit, onDelete, onCreateLo
                 fromLng={tour.fromLongitude}
                 toLat={tour.toLatitude}
                 toLng={tour.toLongitude}
+                routeGeometry={tour.routeInfo?.geometry}
                 height="350px"
               />
             </Suspense>
